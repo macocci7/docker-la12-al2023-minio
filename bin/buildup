@@ -1,0 +1,58 @@
+#!/bin/bash
+
+#--------------------------------------------------------#
+# Script to build up entire environment for development.
+# - Creates a new Laravel 12 project
+# - Copies .env.local to .env
+# - Layouts Laravel files for environment testing.
+# - Creates TLS certs for MinIO
+# - Builds containers
+# - Runs initial settings
+#     - Performs database migration (MySQL)
+#     - Sets permissions
+#     - Enables and boots services
+# - Runs environment tests
+#     - Laravel test (php artisan test)
+#     - SMTP test (php artisan mail:send)
+#     - Queue test (php artisan mail:queue)
+#     - Storage upload test (php artisan minio:put)
+#     - Storage download test (php artisan minio:get)
+#--------------------------------------------------------#
+
+# - Creates a new Laravel 12 project
+composer create-project laravel/laravel:^12 html
+
+# - Copies .env.local to .env
+cp -f laravel/.env.local html/.env.local
+cp -f laravel/.env.local html/.env
+
+# - Layouts Laravel files for environment testing.
+cp -rf laravel/* html/
+
+# - Creates TLS certs for MinIO
+mkcert -install
+mkcert -cert-file ./docker/minio/certs/public.crt -key-file ./docker/minio/certs/private.key localhost
+
+# - Builds containers
+docker compose up -d
+
+# - Runs initial settings
+#     - Sets permissions
+#     - Performs database migration (MySQL)
+#     - Enables and boots services
+bin/change-permissions
+bin/artisan key:generate
+bin/artisan migrate
+bin/initial-settings
+
+# - Runs environment tests
+#     - Laravel test (php artisan test)
+#     - SMTP test (php artisan mail:send)
+#     - Queue test (php artisan mail:queue)
+#     - Storage upload test (php artisan minio:put)
+#     - Storage download test (php artisan minio:get)
+bin/artisan test
+bin/artisan mail:send
+bin/artisan mail:queue
+bin/artisan minio:put
+bin/artisan minio:get
