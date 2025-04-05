@@ -1,0 +1,58 @@
+services:
+  al2023:
+    build:
+      context: ./docker/al2023
+      dockerfile: Dockerfile
+    privileged: true
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - './html:/var/www/html'
+    networks:
+      - skynet
+    depends_on:
+      - mysql
+      - mailpit
+      - minio
+  mysql:
+    build:
+      context: ./docker/mysql
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/dump:/root/dump
+    ports:
+        - '3306:3306'
+    environment:
+        - MYSQL_ROOT_PASSWORD=pass
+    networks:
+      - skynet
+  mailpit:
+    image: axllent/mailpit:v1.24.0
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    environment:
+      - MP_DATA_FILE=/data/mailpit.db
+    volumes:
+      - ./docker/mailpit/data:/data
+    networks:
+      - skynet
+  minio:
+    image: minio/minio:RELEASE.2025-03-12T18-04-18Z
+    ports:
+        - '9000:9000'
+        - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minio123
+    volumes:
+      - ./docker/minio/data:/data
+      - ./docker/minio/certs:/root/.minio/certs
+    command: server /data --console-address ":9001"
+    networks:
+      - skynet
+networks:
+  skynet:
+    driver: bridge

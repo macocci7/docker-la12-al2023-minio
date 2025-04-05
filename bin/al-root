@@ -1,0 +1,10 @@
+#!/bin/bash
+
+CONTAINER=al2023
+USER=root
+SHELL=bash
+echo "#----------------------------------"
+echo "# container: [$CONTAINER]"
+echo "# user: [$USER]"
+echo "#----------------------------------"
+docker compose exec --user=$USER $CONTAINER $SHELL

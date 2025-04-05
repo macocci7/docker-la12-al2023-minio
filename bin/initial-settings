@@ -1,0 +1,32 @@
+#!/bin/bash
+
+CONTAINER=al2023
+USER=root
+SHELL=bash
+
+echo
+echo "This script is going to execute initial settings on [$CONTAINER] container."
+echo "- Changing ownerships of files[folders] in [/var/www/html] (every time)"
+echo "- Changing permissions of files[folders] in [/var/www/html] (every time)"
+echo "- Enabling and starting services (every time)"
+echo
+
+CAN_CONTINUE=""
+while [[ ! $CAN_CONTINUE =~ ^[ny]$ ]]; do
+	echo -n "Would you like to continue?[y/n]:"
+	read CAN_CONTINUE
+done
+
+if [ "$CAN_CONTINUE" = "n" ]; then
+	echo "OK! Operation aborted."
+	exit
+fi
+
+echo "OK! Continueing the process..."
+echo
+
+echo "#----------------------------------"
+echo "# container: [$CONTAINER]"
+echo "# user: [$USER]"
+echo "#----------------------------------"
+docker compose exec --user=$USER $CONTAINER $SHELL /$USER/bin/initial-settings

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+CONF_DIR=$(cd ${SCRIPT_DIR}/.. && pwd)
+DUMP_DIR=$(cd ${SCRIPT_DIR}/../dump && pwd)
+SCRIPT_NAME=`basename $0`
+
+execute_sql () {
+    echo "SQL> " $1
+    mysql --defaults-extra-file=${CONF_DIR}/db-access.cnf -e "$1"
+}
+
+# Show databases
+show_databases () {
+    CAN_SHOW_DATABASES=""
+    while [[ ! $CAN_SHOW_DATABASES =~ ^[ny]$ ]]; do
+        echo -n "Would you like to see databases?[y/n]:"
+        read CAN_SHOW_DATABASES
+    done
+    if [ $CAN_SHOW_DATABASES = "y" ]; then
+        execute_sql "show databases;"
+    fi
+}
+
+input_db_name () {
+    while [ -z $DB_NAME ]; do
+        echo -n "Input database name to export:"
+        read DB_NAME
+    done
+}
+
+# Check DB existence
+check_db_existence () {
+    DB_LIST=`execute_sql "show databases like '$DB_NAME';" | grep -v SQL`
+    if [ "$DB_LIST" = "" ]; then
+        echo "Database [$DB_NAME] does not exist."
+        echo "Operation aborted."
+        exit 1
+    fi
+}
+
+show_databases
+DB_NAME=""
+input_db_name
+check_db_existence
+
+# Dump
+DUMP_FILENAME=$DB_NAME.dump.`date "+%Y%m%d-%H%M%S-"`$$
+umask 0011
+echo "Exporting database [${DB_NAME}] into [${DUMP_DIR}/${DUMP_FILENAME}]..."
+mysqldump --defaults-extra-file=${CONF_DIR}/db-access.cnf ${DB_NAME} > ${DUMP_DIR}/$DUMP_FILENAME
+echo "Completed!"

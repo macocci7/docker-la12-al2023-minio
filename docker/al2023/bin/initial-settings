@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+
+# changing permissions
+${SCRIPT_DIR}/change-permissions
+
+# enabling and starting services
+${SCRIPT_DIR}/boot-services

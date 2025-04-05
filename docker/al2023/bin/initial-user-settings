@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+SCRIPT_NAME=$(basename $0)
+SCRIPT_PATH=${SCRIPT_DIR}/${SCRIPT_PATH}
+WEBDOC_DIR='/var/www/html'
+USER=ec2-user
+
+# adding ec2-user settings
+BASHRC_PATH=/home/${USER}/.bashrc
+if [ ! -f $BASHRC_PATH ]; then
+    echo "[$BASHRC_PATH] not found."
+    echo "Operation aborted."
+    exit 1
+fi
+USER_CHECK_PATTERN="# set by ${SCRIPT_PATH}"
+USER_CHECK_RESULT=`grep "$USER_CHECK_PATTERN" $BASHRC_PATH`
+if [ "$USER_CHECK_RESULT" = "" ]; then
+    echo "Adding [${USER}] settings..."
+    echo >> $BASHRC_PATH
+    echo $USER_CHECK_PATTERN at `date "+%Y/%m/%d-%H:%M:%S (%Z)"` >> $BASHRC_PATH
+    echo "> Setting umask as 0000..."
+    echo "umask 0000" >> $BASHRC_PATH
+    echo "> Setting login directory as [$WEBDOC_DIR]..."
+    echo "cd $WEBDOC_DIR" >> $BASHRC_PATH
+    echo "Done!"
+else
+    echo "[${USER}] settings which has been planned has already been done."
+    echo "Skipping this process..."
+fi
+echo

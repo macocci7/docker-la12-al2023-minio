@@ -1,0 +1,6 @@
+#!/bin/bash
+
+CONTAINER=al2023
+USER=ec2-user
+SHELL=bash
+docker compose exec --user=$USER $CONTAINER $SHELL -l -c "umask 000 && php artisan $*"

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+CONTAINER=mailpit
+USER=root
+SHELL=sh
+echo "#----------------------------------"
+echo "# container: [$CONTAINER]"
+echo "# user: [$USER]"
+echo "#----------------------------------"
+docker compose exec --user=$USER $CONTAINER $SHELL

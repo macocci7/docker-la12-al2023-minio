@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# enabling and starting services
+echo "Enabling and starting services..."
+
+# enabling nginx
+echo "> systemctl enable nginx"
+systemctl enable nginx
+
+# starting nginx
+echo "> systemctl start nginx"
+systemctl start nginx
+
+# enabling supervisord
+echo "> systemctl enable supervisord"
+systemctl enable supervisord
+
+# starting supervisord
+echo "> systemctl start supervisord"
+systemctl start supervisord
+
+echo
+echo "Operation Completed!"

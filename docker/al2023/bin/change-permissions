@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+WEBDOC_DIR='/var/www/html'
+USER=ec2-user
+GROUP=ec2-user
+
+if [ ! -d $WEBDOC_DIR ]; then
+    echo "[$WEBDOC_DIR] not found."
+    echo "Operation abored."
+    exit 1
+fi
+
+# changing permissions
+echo "Changing permissions..."
+
+COMMAND="chown -R ${USER}:${GROUP} ${WEBDOC_DIR}"
+echo "> $COMMAND"
+$COMMAND
+
+COMMAND="chmod -R o+w /var/www/html"
+echo "> $COMMAND"
+$COMMAND
+
+COMMAND="chmod -R 777 /var/www/html/bootstrap/cache /var/www/html/storage"
+echo "> $COMMAND"
+$COMMAND
+
+echo
+echo "Operation Completed!"

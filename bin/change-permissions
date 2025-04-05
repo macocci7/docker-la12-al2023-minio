@@ -1,0 +1,6 @@
+#!/bin/bash
+
+CONTAINER=al2023
+USER=root
+SHELL=bash
+docker compose exec --user=$USER $CONTAINER $SHELL -l -c /${USER}/bin/change-permissions

@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+CONF_DIR=$(cd ${SCRIPT_DIR}/.. && pwd)
+DUMP_DIR=$(cd ${SCRIPT_DIR}/../dump && pwd)
+SCRIPT_NAME=`basename $0`
+
+DB_NAME=""
+DUMP_FILENAME=""
+
+input_db_name () {
+    while [[ ! $DB_NAME =~ ^[a-z][a-z0-9_]*$ ]]; do
+        echo -n "Input database name: "
+        read DB_NAME
+    done
+}
+
+check_if_db_exists () {
+    SQL="show databases like '${DB_NAME}';"
+    DB_LIST=`mysql --defaults-extra-file=${CONF_DIR}/db-access.cnf -e "$SQL"`
+    if [ "$DB_LIST" != "" ]; then
+        return 1
+    fi
+    return 0
+}
+
+input_dump_filename () {
+    DUMP_FILENAME_EXISTS=1
+    while [ $DUMP_FILENAME_EXISTS -eq 1 ]; do
+        list_dump_files
+        echo -n "Input filename to import:"
+        read DUMP_FILENAME
+        check_if_dump_filename_exists
+        DUMP_FILENAME_EXISTS=$?
+        if [ $DUMP_FILENAME_EXISTS -eq 1 ]; then
+            echo "[${DUMP_FILENAME}] not found."
+        fi
+    done
+}
+
+list_dump_files () {
+    echo "> Dumpfiles:"
+    DUMP_FILES=""
+    while [ -z "$DUMP_FILES" ]; do
+        DUMP_FILES=`cd ${DUMP_DIR}; ls`
+        if [ -z "$DUMP_FILES" ]; then
+            echo "> No files found."
+            echo -n "> Put files to import in [dump] directory and press [enter]:"
+            read
+        fi
+    done
+    for FILE in $DUMP_FILES; do
+        echo "  - [${FILE}]"
+    done
+    echo "> ${#DUMP_FILES[@]} files found."
+}
+
+check_if_dump_filename_exists () {
+    if [ -f "${DUMP_DIR}/${DUMP_FILENAME}" ]; then
+        # the file exists
+        return 0
+    else
+        # the file not found
+        return 1
+    fi
+}
+
+import_db () {
+    SQL="drop database if exists ${DB_NAME}; create database ${DB_NAME};"
+    echo "Running SQL:"
+    echo "SQL> ${SQL}"
+    mysql --defaults-extra-file=${CONF_DIR}/db-access.cnf -e"${SQL}"
+    echo "Importing data from [${DUMP_FILENAME}]..."
+    mysql --defaults-extra-file=${CONF_DIR}/db-access.cnf ${DB_NAME} < ${DUMP_DIR}/${DUMP_FILENAME}
+    echo "Completed!"
+}
+
+input_db_name
+check_if_db_exists
+if [ $? -eq 1 ]; then
+    echo "The database [${DB_NAME}] exists but will be dropped before the data is imported."
+    CAN_DROP_DB=""
+    while [[ ! $CAN_DROP_DB =~ ^[ny]$ ]]; do
+        echo -n "Would you like to continue?[y/n]:"
+        read CAN_DROP_DB
+    done
+    if [ $CAN_DROP_DB = "n" ]; then
+        echo "Operation aborted."
+        exit
+    fi
+fi
+input_dump_filename
+import_db

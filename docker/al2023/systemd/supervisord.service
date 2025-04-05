@@ -1,0 +1,13 @@
+[Unit]
+Documentation=http://supervisord.org
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+ExecReload=/usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf reload
+ExecStop=/usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf shutdown
+User=root
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+CONTAINER=mysql
+USER=root
+SHELL=bash
+echo "#----------------------------------"
+echo "# container: [$CONTAINER]"
+echo "# user: [$USER]"
+echo "#----------------------------------"
+docker compose exec --user=$USER $CONTAINER $SHELL /$USER/bin/import-data
