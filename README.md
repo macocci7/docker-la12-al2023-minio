@@ -93,6 +93,7 @@ This command performs:
 - `bin/minio-root`: connects to root shell on `minio` container.
 - `bin/mysql-cleanup`: clears whole MySQL data. (run with `sudo`)
 - `bin/mysql-root`: connects to root shell on `mysql` container.
+- `bin/startup`: starts containers.
 
 ## LICENSE
 
