@@ -32,13 +32,22 @@ check_command () {
     fi
 }
 
+print_cyan () {
+    printf '\033[36m%s\033[m\n' "${1}"
+}
+
+print_green_back () {
+    printf '\033[1;37;42m%s\033[m\n' "${1}"
+}
+
 print_red_back () {
     printf '\033[37;41m%s\033[m\n' "${1}"
 }
 
 # Confirmation
 echo
-echo "This script performs building up new containers with docker-compose.yml"
+print_green_back "This script performs building up new containers with docker-compose.yml"
+echo
 CAN_CONTINUE=""
 while [[ ! $CAN_CONTINUE =~ ^[ny]$ ]]; do
     echo -n "Are you sure to continue? [y/n]:"
@@ -48,49 +57,68 @@ if [ $CAN_CONTINUE = "n" ]; then
     print_red_back "Operation aborted."
     exit 1
 fi
+echo
 
 # Command test
+print_green_back "Checking essential commands"
 check_command composer --version
-check_command mkcert --version
+check_command echo -n "mkcert:" && mkcert --version
 check_command docker --version
+echo
 
 # Cleans up MySQL data
+print_green_back "Cleaning up MySQL data"
 DATA_DIR=$(cd ${SCRIPT_DIR}/../docker/mysql/data && pwd)
 ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' ${DATA_DIR}`
 if [ -n "${ENTRIES}" ]; then
     check_command sudo ${SCRIPT_DIR}/mysql-cleanup
 fi
+echo
 
 # Cleans up MinIO data
+print_green_back "Cleaning up MinIO data"
 check_command ${SCRIPT_DIR}/minio-cleanup
+echo
 
 # - Creates a new Laravel 12 project
+print_green_back "Creating a new Laravel 12 project"
 check_command ${SCRIPT_DIR}/create-laravel-project
+echo
 
 # - Copies .env.local to .env
+print_green_back "Copying .env.local to .env"
 check_command cp -f laravel/.env.local html/.env.local
 check_command cp -f laravel/.env.local html/.env
+echo
 
 # - Layouts Laravel files for environment testing.
+print_green_back "Layouting Laravel files for environment testing."
 check_command cp -rf laravel/* html/
+echo
 
 # - Creates TLS certs for MinIO
+print_green_back "Creating TLS certs for MinIO"
 check_command mkcert -install
 check_command mkcert -cert-file ./docker/minio/certs/public.crt -key-file ./docker/minio/certs/private.key localhost
+echo
 
 # - Builds containers
+print_green_back "Building Containers"
 check_command docker compose up -d
+echo
 
 # - Runs initial settings
 #     - Sets permissions
 #     - Performs database migration (MySQL)
 #     - Enables and boots services
+print_green_back "Running initial settings"
 check_command bin/change-permissions
 check_command bin/artisan key:generate
-echo "Waiting for 10 seconds..."
+echo "Waiting for 10 seconds for MySQL to initialize..."
 sleep 10
 check_command bin/artisan migrate
 check_command bin/initial-settings
+echo
 
 # - Runs environment tests
 #     - Laravel test (php artisan test)
@@ -98,8 +126,12 @@ check_command bin/initial-settings
 #     - Queue test (php artisan mail:queue)
 #     - Storage upload test (php artisan minio:put)
 #     - Storage download test (php artisan minio:get)
+print_green_back "Running environment tests"
+print_cyan "> bin/artisan test"
 check_command bin/artisan test
-check_command bin/artisan mail:send
-check_command bin/artisan mail:queue
-check_command bin/artisan minio:put
-check_command bin/artisan minio:get
+print_cyan "> html/vendor/bin/phpunit --testdox --color tests"
+check_command html/vendor/bin/phpunit --testdox --color tests
+echo
+
+print_green_back "All done!"
+echo

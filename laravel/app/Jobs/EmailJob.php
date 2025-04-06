@@ -15,7 +15,7 @@ class EmailJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct(protected string|null $key = null)
     {
         //
     }
@@ -28,7 +28,7 @@ class EmailJob implements ShouldQueue
         Mail::raw('Hello!', function (Message $message) {
             $message->to([new Address('hoge@example.com', 'Mr. Hoge')])
                 ->from([new Address('test@example.com', 'Test User')])
-                ->subject('Test Mail Queue');
+                ->subject('Test Mail Queue' . $this->key);
         });
     }
 }

@@ -7,14 +7,14 @@ use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\Mime\Address;
 
-class SendEmailsCommand extends Command
+class MailSendCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mail:send';
+    protected $signature = 'mail:send {--key=}';
 
     /**
      * The console command description.
@@ -31,7 +31,7 @@ class SendEmailsCommand extends Command
         Mail::raw('Hello!', function (Message $message) {
             $message->to([new Address('hoge@example.com', 'Mr. Hoge')])
                 ->from([new Address('test@example.com', 'Test User')])
-                ->subject('Test Mail');
+                ->subject('Test Mail' . $this->option('key'));
         });
     }
 }
