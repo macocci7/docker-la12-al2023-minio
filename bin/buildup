@@ -19,31 +19,78 @@
 #     - Storage download test (php artisan minio:get)
 #--------------------------------------------------------#
 
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+
+# - Check commands
+check_command () {
+    COMMAND="$*"
+    $COMMAND
+    if [ $? -ne 0 ]; then
+        printf '\033[37;41m%s\033[m\n' "Failed to run: [${COMMAND}]"
+        printf '\033[37;41m%s\033[m\n' "Operation aborted."
+        exit 1
+    fi
+}
+
+print_red_back () {
+    printf '\033[37;41m%s\033[m\n' "${1}"
+}
+
+# Confirmation
+echo
+echo "This script performs building up new containers with docker-compose.yml"
+CAN_CONTINUE=""
+while [[ ! $CAN_CONTINUE =~ ^[ny]$ ]]; do
+    echo -n "Are you sure to continue? [y/n]:"
+    read CAN_CONTINUE
+done
+if [ $CAN_CONTINUE = "n" ]; then
+    print_red_back "Operation aborted."
+    exit 1
+fi
+
+# Command test
+check_command composer --version
+check_command mkcert --version
+check_command docker --version
+
+# Cleans up MySQL data
+DATA_DIR=$(cd ${SCRIPT_DIR}/../docker/mysql/data && pwd)
+ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' ${DATA_DIR}`
+if [ -n "${ENTRIES}" ]; then
+    check_command sudo ${SCRIPT_DIR}/mysql-cleanup
+fi
+
+# Cleans up MinIO data
+check_command ${SCRIPT_DIR}/minio-cleanup
+
 # - Creates a new Laravel 12 project
-composer create-project laravel/laravel:^12 html
+check_command ${SCRIPT_DIR}/create-laravel-project
 
 # - Copies .env.local to .env
-cp -f laravel/.env.local html/.env.local
-cp -f laravel/.env.local html/.env
+check_command cp -f laravel/.env.local html/.env.local
+check_command cp -f laravel/.env.local html/.env
 
 # - Layouts Laravel files for environment testing.
-cp -rf laravel/* html/
+check_command cp -rf laravel/* html/
 
 # - Creates TLS certs for MinIO
-mkcert -install
-mkcert -cert-file ./docker/minio/certs/public.crt -key-file ./docker/minio/certs/private.key localhost
+check_command mkcert -install
+check_command mkcert -cert-file ./docker/minio/certs/public.crt -key-file ./docker/minio/certs/private.key localhost
 
 # - Builds containers
-docker compose up -d
+check_command docker compose up -d
 
 # - Runs initial settings
 #     - Sets permissions
 #     - Performs database migration (MySQL)
 #     - Enables and boots services
-bin/change-permissions
-bin/artisan key:generate
-bin/artisan migrate
-bin/initial-settings
+check_command bin/change-permissions
+check_command bin/artisan key:generate
+echo "Waiting for 10 seconds..."
+sleep 10
+check_command bin/artisan migrate
+check_command bin/initial-settings
 
 # - Runs environment tests
 #     - Laravel test (php artisan test)
@@ -51,8 +98,8 @@ bin/initial-settings
 #     - Queue test (php artisan mail:queue)
 #     - Storage upload test (php artisan minio:put)
 #     - Storage download test (php artisan minio:get)
-bin/artisan test
-bin/artisan mail:send
-bin/artisan mail:queue
-bin/artisan minio:put
-bin/artisan minio:get
+check_command bin/artisan test
+check_command bin/artisan mail:send
+check_command bin/artisan mail:queue
+check_command bin/artisan minio:put
+check_command bin/artisan minio:get

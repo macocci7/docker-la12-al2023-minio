@@ -1,0 +1,70 @@
+#!/bin/bash
+
+LARAVEL_VERSION=12
+PROJECT_NAME='html'
+PROJECT_DIR=$(pwd)/${PROJECT_NAME}
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+
+is_empty_dir () {
+    ENTRIES=`ls -a -I '.' -I '..' $1`
+    if [ -z "${ENTRIES}" ]; then
+        # empty
+        return 0
+    else
+        # not empty
+        return 1
+    fi
+}
+
+print_red_back () {
+    printf '\033[37;41m%s\033[m\n' "${1}"
+}
+
+clean_up_dir () {
+    if [ ! -d $1 ]; then
+        print_red_back "Directory [${1}] not found."
+        print_red_back "Operation aborted."
+        exit 1
+    fi
+    if [ ! -x $1 ]; then
+        print_red_back "No permission to enter [${1}]."
+        print_red_back "Operation aborted."
+        exit 1
+    fi
+    if [ ! -w $1 ]; then
+        print_red_back "No permission to remove files in [${1}]."
+        print_red_back "Operation aborted."
+        exit 1
+    fi
+    cd $1
+    for ENTRY in `ls -a -I '.' -I '..'`; do
+        rm -rf $ENTRY
+    done
+}
+
+echo "Creating a new Laravel ${LARAVEL_VERSION} Project..."
+is_empty_dir $PROJECT_DIR
+if [ $? -eq 1 ]; then
+    print_red_back "Project directory [${PROJECT_DIR}] is not empty."
+    CAN_CLEAN_UP=""
+    while [[ ! "$CAN_CLEAN_UP" =~ ^[ny]$ ]]; do
+        echo -n "Would you like to clean up? [y/n]:"
+        read CAN_CLEAN_UP
+    done
+    if [ $CAN_CLEAN_UP = "y" ]; then
+        echo "Cleaning up directory [${PROJECT_DIR}]..."
+        clean_up_dir $PROJECT_DIR
+        echo "Done."
+    else
+        print_red_back "Operation aborted."
+        exit
+    fi
+fi
+
+COMMAND="composer create-project laravel/laravel:^${LARAVEL_VERSION} ${PROJECT_DIR}"
+echo "> ${COMMAND}"
+$COMMAND
+cd ${PROJECT_DIR}
+COMMAND='composer require league/flysystem-aws-s3-v3:^3.0 --with-all-dependencies'
+echo "> ${COMMAND}"
+$COMMAND

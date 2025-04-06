@@ -1,6 +1,4 @@
 ARG amazonlinux_version="2023.7.20250331.0"
-ARG nginx_version="1.26.3"
-ARG php_version="8.4.5"
 
 FROM amazonlinux:${amazonlinux_version}
 
@@ -24,7 +22,7 @@ RUN dnf update \
 RUN useradd "ec2-user" && echo "ec2-user ALL=NOPASSWD: ALL" >> /etc/sudoers
 
 # install nginx
-RUN dnf install -y nginx:${nginx_version}
+RUN dnf install -y nginx
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./nginx/php.conf /etc/nginx/default.d/php.conf
 COPY ./nginx/php-fpm.conf /etc/nginx/conf.d/php-fpm.conf
@@ -52,6 +50,7 @@ RUN dnf install \
     -y
 
 WORKDIR /root
+ARG php_version="8.4.5"
 RUN curl https://www.php.net/distributions/php-${php_version}.tar.gz -o php-${php_version}.tar.gz \
     && tar xvfz php-${php_version}.tar.gz \
     && cd php-${php_version} \

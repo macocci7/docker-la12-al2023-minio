@@ -1,0 +1,75 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+DATA_DIR=$(cd ${SCRIPT_DIR}/../docker/minio/data && pwd)
+BUCKET="laravel"
+
+print_red_back () {
+    printf '\033[37;41m%s\033[m\n' "${1}"
+}
+
+clean_up_dir () {
+    if [ ! -d $1 ]; then
+        print_red_back "Directory [${1}] not found."
+        print_red_back "Operation aborted."
+        exit 1
+    fi
+    if [ ! -x $1 ]; then
+        print_red_back "No permission to enter [${1}]."
+        print_red_back "Operation aborted."
+        exit 1
+    fi
+    if [ ! -w $1 ]; then
+        print_red_back "No permission to remove files in [${1}]."
+        print_red_back "Operation aborted."
+        exit 1
+    fi
+    cd $1
+    for ENTRY in `ls -a -I '.' -I '..' -I '.gitignore'`; do
+        sudo rm -rf $ENTRY
+    done
+}
+
+# Confirmation
+echo "This script is going to clear all data in [${DATA_DIR}]."
+CAN_CLEAN_UP=""
+while [[ ! $CAN_CLEAN_UP =~ ^[ny]$ ]]; do
+    echo -n "Are you sure you want to delete whole data? [y/n]:"
+    read CAN_CLEAN_UP
+done
+if [ $CAN_CLEAN_UP = "n" ]; then
+    print_red_back "Operation aborted."
+    exit 1
+fi
+
+# Checks data directory existence
+if [ ! -d $DATA_DIR ]; then
+    print_red_back "Directory [${DATA_DIR}] not found."
+    print_red_back "Operation aborted."
+    exit 1
+fi
+
+# Checks in the data directory
+DIR=${DATA_DIR}
+ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' ${DATA_DIR}`
+if [ -z "${ENTRIES}" ]; then
+    echo "Directory [${DIR}] is empty."
+else
+    echo "Directory [${DIR}] is not empty."
+    echo "Cleaning up [${DIR}]..."
+    clean_up_dir $DIR
+    if [ $? -ne 0 ]; then
+        print_red_back "Operation failed!"
+        exit 1
+    fi
+fi
+
+# Creates a bucket directory
+DIR=${DATA_DIR}/${BUCKET}
+mkdir ${DIR}
+if [ $? -ne 0 ]; then
+    print_read_back "Failed to create [${DIR}]."
+    print_read_back "Operation aborted."
+fi
+
+echo "Completed!"

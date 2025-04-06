@@ -1,0 +1,73 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+DATA_DIR=$(cd ${SCRIPT_DIR}/../docker/mysql/data && pwd)
+
+is_empty_dir () {
+    ENTRIES=`ls -a -I '.' -I '..' $1`
+    if [ -z "${ENTRIES}" ]; then
+        # empty
+        return 0
+    else
+        # not empty
+        return 1
+    fi
+}
+
+print_red_back () {
+    printf '\033[37;41m%s\033[m\n' "${1}"
+}
+
+clean_up_dir () {
+    if [ ! -d $1 ]; then
+        print_red_back "Directory [${1}] not found."
+        print_red_back "Operation aborted."
+        exit 1
+    fi
+    if [ ! -x $1 ]; then
+        print_red_back "No permission to enter [${1}]."
+        print_red_back "Operation aborted."
+        exit 1
+    fi
+    if [ ! -w $1 ]; then
+        print_red_back "No permission to remove files in [${1}]."
+        print_red_back "Operation aborted."
+        exit 1
+    fi
+    cd $1
+    for ENTRY in `ls -a -I '.' -I '..' -I '.gitignore'`; do
+        rm -rf $ENTRY
+    done
+}
+
+if [ ! -d $DATA_DIR ]; then
+    print_red_back "Directory [${DATA_DIR}] not found."
+    print_red_back "Operation aborted."
+    exit 1
+fi
+
+is_empty_dir $DATA_DIR
+if [ $? -eq 0 ]; then
+    echo "Directory [${DATA_DIR}] is empty."
+    exit
+fi
+
+echo "Directory [${DATA_DIR}] is not empty."
+CAN_CLEAN_UP=""
+while [[ ! $CAN_CLEAN_UP =~ ^[ny]$ ]]; do
+    echo -n "Are you sure you want to delete whole data? [y/n]:"
+    read CAN_CLEAN_UP
+done
+if [ $CAN_CLEAN_UP = "n" ]; then
+    print_red_back "Operation aborted."
+    exit 1
+fi
+
+echo "Cleaning up directory [${DATA_DIR}]..."
+clean_up_dir $DATA_DIR
+if [ $? -ne 0 ]; then
+    print_red_back "Operation failed!"
+    exit 1
+fi
+
+echo "Completed!"
