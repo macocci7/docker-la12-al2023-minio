@@ -1,9 +1,16 @@
 #!/bin/bash
+# @usage create-laravel-project
+# @description creates Laravel 12 project in html/ on your host.
+# @example create-laravel-project
 
 LARAVEL_VERSION=12
 PROJECT_NAME='html'
 PROJECT_DIR=$(pwd)/${PROJECT_NAME}
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/colorizable
 
 is_empty_dir () {
     ENTRIES=`ls -a -I '.' -I '..' $1`
@@ -16,24 +23,20 @@ is_empty_dir () {
     fi
 }
 
-print_red_back () {
-    printf '\033[37;41m%s\033[m\n' "${1}"
-}
-
 clean_up_dir () {
     if [ ! -d $1 ]; then
-        print_red_back "Directory [${1}] not found."
-        print_red_back "Operation aborted."
+        print_bg_red "Directory [${1}] not found."
+        print_bg_red "Operation aborted."
         exit 1
     fi
     if [ ! -x $1 ]; then
-        print_red_back "No permission to enter [${1}]."
-        print_red_back "Operation aborted."
+        print_bg_red "No permission to enter [${1}]."
+        print_bg_red "Operation aborted."
         exit 1
     fi
     if [ ! -w $1 ]; then
-        print_red_back "No permission to remove files in [${1}]."
-        print_red_back "Operation aborted."
+        print_bg_red "No permission to remove files in [${1}]."
+        print_bg_red "Operation aborted."
         exit 1
     fi
     cd $1
@@ -45,7 +48,7 @@ clean_up_dir () {
 echo "Creating a new Laravel ${LARAVEL_VERSION} Project..."
 is_empty_dir $PROJECT_DIR
 if [ $? -eq 1 ]; then
-    print_red_back "Project directory [${PROJECT_DIR}] is not empty."
+    print_bg_red "Project directory [${PROJECT_DIR}] is not empty."
     CAN_CLEAN_UP=""
     while [[ ! "$CAN_CLEAN_UP" =~ ^[ny]$ ]]; do
         echo -n "Would you like to clean up? [y/n]:"
@@ -54,17 +57,17 @@ if [ $? -eq 1 ]; then
     if [ $CAN_CLEAN_UP = "y" ]; then
         echo "Cleaning up directory [${PROJECT_DIR}]..."
         clean_up_dir $PROJECT_DIR
-        echo "Done."
+        print_bg_green "Done."
     else
-        print_red_back "Operation aborted."
-        exit
+        print_bg_red "Operation aborted."
+        exit 1
     fi
 fi
 
 COMMAND="composer create-project laravel/laravel:^${LARAVEL_VERSION} ${PROJECT_DIR}"
-echo "> ${COMMAND}"
+print_cyan "> ${COMMAND}"
 $COMMAND
 cd ${PROJECT_DIR}
 COMMAND='composer require league/flysystem-aws-s3-v3:^3.0 --with-all-dependencies'
-echo "> ${COMMAND}"
+print_cyan "> ${COMMAND}"
 $COMMAND

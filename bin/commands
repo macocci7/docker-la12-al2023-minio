@@ -1,0 +1,194 @@
+#!/bin/bash
+# @description lists commands, or show details of commands.
+# @description If [target] is specified, the displayed command names will be narrowed down by a leading match of [target].
+# @usage commands list [target]
+# @usage commands detail [target]
+# @usage commands help
+# @arguments list       : display commands in list style.
+# @arguments detail     : display command details.
+# @arguments help       : display this help.
+# @arguments [target]   : display commands that starts with [target].
+# @example commands list
+# @example commands list my
+# @example commands detail
+# @example commands detail al
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+SUBCOMMAND=""
+TARGET=""
+INDENT1="    "
+INDENT2="${INDENT1}${INDENT1}"
+LF=$(printf '\012_'); LF=${LF%_}
+
+# imports external scripts
+. ${INCLUDE_DIR}/colorizable
+
+get_args () {
+    TARGET=$2
+    case "$1" in
+        detail)
+            SUBCOMMAND="detail"
+            ;;
+        list)
+            SUBCOMMAND="list"
+            ;;
+        '')
+            SUBCOMMAND="help"
+            ;;
+        help)
+            SUBCOMMAND="help"
+            TARGET=""
+            ;;
+        *)
+            SUBCOMMAND="help"
+            TARGET=""
+            print_bg_red "no such subcommand [${1}]"
+    esac
+}
+
+get_entries () {
+    ls ${SCRIPT_DIR}
+}
+
+grep_tags () {
+    FILE=${SCRIPT_DIR}/$1
+    PATTERN="# @${2} "
+    LINES=$(grep -P "^${PATTERN}" ${FILE})
+    echo "${LINES//${PATTERN}/}"
+}
+
+get_description () {
+    echo "$(grep_tags $1 "description")"
+}
+
+get_usage () {
+    echo "$(grep_tags $1 "usage")"
+}
+
+get_arguments () {
+    echo "$(grep_tags $1 "arguments")"
+}
+
+get_options () {
+    echo "$(grep_tags $1 "options")"
+}
+
+get_example () {
+    echo "$(grep_tags $1 "example")"
+}
+
+display_name () {
+    if [ "$1" = "-n" ]; then
+        print_green -n "${2}"
+    else
+        print_green "${1}"
+        echo
+    fi
+}
+
+display_description () {
+    if [ "$1" = "-n" ]; then
+        if [ -n "$2" ]; then
+            echo " : ${2//${LF}*/}"
+        else
+            echo
+        fi
+    else
+        if [ -n "${1}" ]; then
+            echo -n "${INDENT1}"
+            print_yellow "Description:"
+            echo
+            echo "${INDENT2}${1//${LF}/${LF}${INDENT2}}"
+            echo
+        fi
+    fi
+}
+
+display_usage () {
+    if [ -n "${1}" ]; then
+        echo -n "${INDENT1}"
+        print_yellow "Usage:"
+        echo
+        echo "${INDENT2}${1//${LF}/${LF}${INDENT2}}"
+        echo
+    fi
+}
+
+display_arguments () {
+    if [ -n "${1}" ]; then
+        echo -n "${INDENT1}"
+        print_yellow "Arguments:"
+        echo
+        echo "${INDENT2}${1//${LF}/${LF}${INDENT2}}"
+        echo
+    fi
+}
+
+display_options () {
+    if [ -n "${1}" ]; then
+        echo -n "${INDENT1}"
+        print_yellow "Options:"
+        echo
+        echo "${INDENT2}${1//${LF}/${LF}${INDENT2}}"
+        echo
+    fi
+}
+
+display_example () {
+    if [ -n "${1}" ]; then
+        echo -n "${INDENT1}"
+        print_yellow "Example: "
+        echo
+        echo "${INDENT2}${1//${LF}/${LF}${INDENT2}}"
+        echo
+    fi
+}
+
+display_list () {
+    if [ -n "${TARGET}" ] && [[ "${1}" != "${TARGET}"* ]]; then
+        return
+    fi
+    # attributes
+    DESCRIPTION=$(get_description ${1})
+
+    # command name
+    display_name -n "${1}"
+
+    # description
+    display_description -n "${DESCRIPTION}"
+}
+
+display_detail () {
+    if [ -n "${TARGET}" ] && [[ "${1}" != "${TARGET}"* ]]; then
+        return
+    fi
+    # attributes
+    DESCRIPTION=$(get_description ${1})
+    USAGE=$(get_usage ${1})
+    ARGUMENTS=$(get_arguments ${1})
+    OPTIONS=$(get_options ${1})
+    EXAMPLE=$(get_example ${1})
+
+    display_name "${1}"
+    display_description "${DESCRIPTION}"
+    display_usage "${USAGE}"
+    display_arguments "${ARGUMENTS}"
+    display_options "${OPTIONS}"
+    display_example "${EXAMPLE}"
+}
+
+get_args $@
+
+if [ "${SUBCOMMAND}" = "help" ]; then
+    display_detail "commands"
+    exit
+fi
+
+for ENTRY in $(get_entries); do
+    if [ "${SUBCOMMAND}" = "detail" ]; then
+        display_detail "${ENTRY}"
+    else
+        display_list "${ENTRY}"
+    fi
+done

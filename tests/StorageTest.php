@@ -31,13 +31,15 @@ class StorageTest extends TestCase
     {
         $files = Storage::disk('s3')->allFiles('/');
         $this->assertTrue(!empty($files));
-        $expected = [count($files) . " files found."];
+        $expected = [
+            count($files) . " files found.",
+        ];
         foreach ($files as $file) {
             $expected[] = Storage::disk('s3')->url($file);
         }
         $result = exec(__DIR__ . '/../bin/artisan minio:get', $output, $retval);
         $this->assertTrue($result !== false);
-        $this->assertSame($expected, $output);
+        $this->assertSame($expected, array_slice($output, 4));
         $this->assertSame(0, $retval);
     }
 }

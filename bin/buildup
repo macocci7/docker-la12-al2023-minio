@@ -1,52 +1,51 @@
 #!/bin/bash
-
+# @usage buildup
+# @description builds and starts containers.
+# @example buildup
 #--------------------------------------------------------#
-# Script to build up entire environment for development.
-# - Creates a new Laravel 12 project
-# - Copies .env.local to .env
-# - Layouts Laravel files for environment testing.
-# - Creates TLS certs for MinIO
-# - Builds containers
-# - Runs initial settings
-#     - Performs database migration (MySQL)
-#     - Sets permissions
-#     - Enables and boots services
-# - Runs environment tests
-#     - Laravel test (php artisan test)
-#     - SMTP test (php artisan mail:send)
-#     - Queue test (php artisan mail:queue)
-#     - Storage upload test (php artisan minio:put)
-#     - Storage download test (php artisan minio:get)
+# @description This command performs:
+# @description - checking essential commands
+# @description - clearing mysql data directory
+# @description - clearing minio data directory
+# @description - clearing html directory
+# @description - creating a new Laravel 12 project into html directory
+# @description - copying .env.local to .env
+# @description - layouting Laravel files for environment testing.
+# @description - creating TLS certs for MinIO
+# @description - building containers
+# @description - running initial settings
+# @description     - database migration (MySQL)
+# @description     - setting permissions
+# @description     - enabling and booting services
+# @description - running environment tests
+# @description     - Laravel test (bin/artisan test)
+# @description     - SMTP test (bin/artisan mail:send)
+# @description     - Queue test (bin/artisan mail:queue)
+# @description     - Storage upload test (bin/artisan minio:put)
+# @description     - Storage reading test (bin/artisan minio:get)
 #--------------------------------------------------------#
 
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/colorizable
 
 # - Check commands
 check_command () {
     COMMAND="$*"
+    print_cyan "> ${COMMAND}"
     $COMMAND
     if [ $? -ne 0 ]; then
-        printf '\033[37;41m%s\033[m\n' "Failed to run: [${COMMAND}]"
-        printf '\033[37;41m%s\033[m\n' "Operation aborted."
+        print_bg_red "Failed to run: [${COMMAND}]"
+        print_bg_red "Operation aborted."
         exit 1
     fi
 }
 
-print_cyan () {
-    printf '\033[36m%s\033[m\n' "${1}"
-}
-
-print_green_back () {
-    printf '\033[1;37;42m%s\033[m\n' "${1}"
-}
-
-print_red_back () {
-    printf '\033[37;41m%s\033[m\n' "${1}"
-}
-
 # Confirmation
 echo
-print_green_back "This script performs building up new containers with docker-compose.yml"
+print_yellow "This script performs building up new containers with docker-compose.yml"
 echo
 CAN_CONTINUE=""
 while [[ ! $CAN_CONTINUE =~ ^[ny]$ ]]; do
@@ -54,56 +53,57 @@ while [[ ! $CAN_CONTINUE =~ ^[ny]$ ]]; do
     read CAN_CONTINUE
 done
 if [ $CAN_CONTINUE = "n" ]; then
-    print_red_back "Operation aborted."
+    print_bg_red "Operation aborted."
     exit 1
 fi
 echo
 
 # Command test
-print_green_back "Checking essential commands"
+print_bg_green "Checking essential commands"
+check_command php --version
 check_command composer --version
 check_command echo -n "mkcert:" && mkcert --version
 check_command docker --version
 echo
 
 # Cleans up MySQL data
-print_green_back "Cleaning up MySQL data"
+print_bg_green "Cleaning up MySQL data"
 DATA_DIR=$(cd ${SCRIPT_DIR}/../docker/mysql/data && pwd)
-ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' ${DATA_DIR}`
-if [ -n "${ENTRIES}" ]; then
-    check_command sudo ${SCRIPT_DIR}/mysql-cleanup
-fi
+#ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' ${DATA_DIR}`
+#if [ -n "${ENTRIES}" ]; then
+    check_command ${SCRIPT_DIR}/mysql-cleanup
+#fi
 echo
 
 # Cleans up MinIO data
-print_green_back "Cleaning up MinIO data"
+print_bg_green "Cleaning up MinIO data"
 check_command ${SCRIPT_DIR}/minio-cleanup
 echo
 
 # - Creates a new Laravel 12 project
-print_green_back "Creating a new Laravel 12 project"
+print_bg_green "Creating a new Laravel 12 project"
 check_command ${SCRIPT_DIR}/create-laravel-project
 echo
 
 # - Copies .env.local to .env
-print_green_back "Copying .env.local to .env"
+print_bg_green "Copying .env.local to .env"
 check_command cp -f laravel/.env.local html/.env.local
 check_command cp -f laravel/.env.local html/.env
 echo
 
 # - Layouts Laravel files for environment testing.
-print_green_back "Layouting Laravel files for environment testing."
+print_bg_green "Layouting Laravel files for environment testing."
 check_command cp -rf laravel/* html/
 echo
 
 # - Creates TLS certs for MinIO
-print_green_back "Creating TLS certs for MinIO"
+print_bg_green "Creating TLS certs for MinIO"
 check_command mkcert -install
 check_command mkcert -cert-file ./docker/minio/certs/public.crt -key-file ./docker/minio/certs/private.key localhost
 echo
 
 # - Builds containers
-print_green_back "Building Containers"
+print_bg_green "Building Containers"
 check_command docker compose up -d
 echo
 
@@ -111,11 +111,17 @@ echo
 #     - Sets permissions
 #     - Performs database migration (MySQL)
 #     - Enables and boots services
-print_green_back "Running initial settings"
+print_bg_green "Running initial settings"
 check_command bin/change-permissions
 check_command bin/artisan key:generate
-echo "Waiting for 10 seconds for MySQL to initialize..."
-sleep 10
+
+SECONDS=12
+echo "Waiting for ${SECONDS} seconds for MySQL to initialize..."
+for S in $(seq 1 ${SECONDS} | sort -nr); do
+    print_magenta "${S} seconds left."
+    sleep 1
+done
+
 check_command bin/artisan migrate
 check_command bin/initial-settings
 echo
@@ -126,12 +132,10 @@ echo
 #     - Queue test (php artisan mail:queue)
 #     - Storage upload test (php artisan minio:put)
 #     - Storage download test (php artisan minio:get)
-print_green_back "Running environment tests"
-print_cyan "> bin/artisan test"
+print_bg_green "Running environment tests"
 check_command bin/artisan test
-print_cyan "> html/vendor/bin/phpunit --testdox --color tests"
 check_command html/vendor/bin/phpunit --testdox --color tests
 echo
 
-print_green_back "All done!"
+print_bg_cyan "All done!" -at-bold
 echo

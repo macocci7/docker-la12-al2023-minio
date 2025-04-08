@@ -9,9 +9,3 @@ COPY ./bin/export-data /root/bin/export-data
 RUN chmod +x /root/bin/*
 
 EXPOSE 3306
-
-# Run the command below after the container starts running.
-# docker compose exec mysql /root/import-data
-RUN echo "Building MySQL Server container has been completed."
-RUN echo "Now you can import data with the command below."
-RUN echo "docker compose exec mysql /root/import-data"

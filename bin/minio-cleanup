@@ -1,27 +1,26 @@
 #!/bin/bash
+# @description clears whole MinIO data.
+# @description super user priviledges required.
+# @usage minio-cleanup
+# @example minio-cleanup
 
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
 DATA_DIR=$(cd ${SCRIPT_DIR}/../docker/minio/data && pwd)
 BUCKET="laravel"
 
-print_red_back () {
-    printf '\033[37;41m%s\033[m\n' "${1}"
-}
+# imports external scripts
+. ${INCLUDE_DIR}/colorizable
 
 clean_up_dir () {
     if [ ! -d $1 ]; then
-        print_red_back "Directory [${1}] not found."
-        print_red_back "Operation aborted."
+        print_bg_red "Directory [${1}] not found."
+        print_bg_red "Operation aborted."
         exit 1
     fi
     if [ ! -x $1 ]; then
-        print_red_back "No permission to enter [${1}]."
-        print_red_back "Operation aborted."
-        exit 1
-    fi
-    if [ ! -w $1 ]; then
-        print_red_back "No permission to remove files in [${1}]."
-        print_red_back "Operation aborted."
+        print_bg_red "No permission to enter [${1}]."
+        print_bg_red "Operation aborted."
         exit 1
     fi
     cd $1
@@ -31,21 +30,21 @@ clean_up_dir () {
 }
 
 # Confirmation
-echo "This script is going to clear all data in [${DATA_DIR}]."
+print_yellow "This script is going to clear all data in [${DATA_DIR}]."
 CAN_CLEAN_UP=""
 while [[ ! $CAN_CLEAN_UP =~ ^[ny]$ ]]; do
     echo -n "Are you sure you want to delete whole data? [y/n]:"
     read CAN_CLEAN_UP
 done
 if [ $CAN_CLEAN_UP = "n" ]; then
-    print_red_back "Operation aborted."
+    print_bg_red "Operation aborted."
     exit 1
 fi
 
 # Checks data directory existence
 if [ ! -d $DATA_DIR ]; then
-    print_red_back "Directory [${DATA_DIR}] not found."
-    print_red_back "Operation aborted."
+    print_bg_red "Directory [${DATA_DIR}] not found."
+    print_bg_red "Operation aborted."
     exit 1
 fi
 
@@ -53,13 +52,14 @@ fi
 DIR=${DATA_DIR}
 ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' ${DATA_DIR}`
 if [ -z "${ENTRIES}" ]; then
-    echo "Directory [${DIR}] is empty."
+    print_green "Directory [${DIR}] is empty."
+    exit;
 else
-    echo "Directory [${DIR}] is not empty."
+    print_yellow "Directory [${DIR}] is not empty."
     echo "Cleaning up [${DIR}]..."
     clean_up_dir $DIR
     if [ $? -ne 0 ]; then
-        print_red_back "Operation failed!"
+        print_bg_red "Operation failed!"
         exit 1
     fi
 fi
@@ -68,8 +68,9 @@ fi
 DIR=${DATA_DIR}/${BUCKET}
 mkdir ${DIR}
 if [ $? -ne 0 ]; then
-    print_read_back "Failed to create [${DIR}]."
-    print_read_back "Operation aborted."
+    print_bg_red "Failed to create [${DIR}]."
+    print_bg_red "Operation aborted."
+    exit 1
 fi
 
-echo "Completed!"
+print_green "Completed!"

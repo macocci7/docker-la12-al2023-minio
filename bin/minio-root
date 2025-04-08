@@ -1,10 +1,16 @@
 #!/bin/bash
+# @description connects to root shell on minio container.
+# @usage minio-root
+# @example minio-root
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/displayable
 
 CONTAINER=minio
 USER=root
 SHELL=bash
-echo "#----------------------------------"
-echo "# container: [$CONTAINER]"
-echo "# user: [$USER]"
-echo "#----------------------------------"
+display_connection_info ${CONTAINER} ${USER}
 docker compose exec --user=$USER $CONTAINER $SHELL

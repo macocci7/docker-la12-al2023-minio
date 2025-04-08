@@ -1,0 +1,207 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/validatable
+
+# attributes
+declare -A COLORIZABLE_AT_CODES=(
+    ["reset"]="0"
+    ["bold"]="1"
+    ["faint"]="2"
+    ["italic"]="3"
+    ["underline"]="4"
+    ["blink"]="5"
+    ["fast-blink"]="6"
+    ["reverse"]="7"
+    ["conceal"]="8"
+    ["strike"]="9"
+    ["gothic"]="20"
+    ["double-underline"]="21"
+    ["normal"]="22"
+    ["no-italic"]="23"
+    ["no-underline"]="24"
+    ["no-blink"]="25"
+    ["no-reverse"]="27"
+    ["no-conceal"]="28"
+    ["no-strike"]="29"
+)
+
+# foreground color codes
+declare -A COLORIZABLE_FG_CODES=(
+    ["black"]="30"
+    ["red"]="31"
+    ["green"]="32"
+    ["yellow"]="33"
+    ["blue"]="34"
+    ["magenta"]="35"
+    ["cyan"]="36"
+    ["white"]="37"
+    ["extended"]="38"
+    ["standard"]="39"
+)
+
+# background color codes
+declare -A COLORIZABLE_BG_CODES=(
+    ["black"]="40"
+    ["red"]="41"
+    ["green"]="42"
+    ["yellow"]="43"
+    ["blue"]="44"
+    ["magenta"]="45"
+    ["cyan"]="46"
+    ["white"]="47"
+    ["extended"]="48"
+    ["standard"]="49"
+)
+
+get_colorizable_at_keys () {
+    for KEY in ${!COLORIZABLE_AT_CODES[@]}; do
+        echo ${KEY}
+    done | sort
+}
+
+get_colorizable_fg_keys () {
+    for KEY in ${!COLORIZABLE_FG_CODES[@]}; do
+        echo ${KEY}
+    done | sort
+}
+
+get_colorizable_bg_keys () {
+    for KEY in ${!COLORIZABLE_BG_CODES[@]}; do
+        echo ${KEY}
+    done | sort
+}
+
+get_colorizable_at_codes () {
+    if [ "${1:0:4}" != "-at-" ]; then
+        return 1
+    fi
+    in_array ${1##-at-} ${!COLORIZABLE_AT_CODES[@]}
+    if [ $? -eq 0 ]; then
+        echo "${COLORIZABLE_AT_CODES[${1##-at-}]}"
+        return 0
+    fi
+    return 1
+}
+
+get_colorizable_fg_codes () {
+    if [ "${1:0:4}" != "-fg-" ]; then
+        return 1
+    fi
+    in_array ${1##-fg-} ${!COLORIZABLE_FG_CODES[@]}
+    if [ $? -eq 0 ]; then
+        echo "${COLORIZABLE_FG_CODES[${1##-fg-}]}"
+        return 0
+    fi
+    return 1
+}
+
+get_colorizable_bg_codes () {
+    if [ "${1:0:4}" != "-bg-" ]; then
+        return 1
+    fi
+    in_array ${1##-bg-} ${!COLORIZABLE_BG_CODES[@]}
+    if [ $? -eq 0 ]; then
+        echo "${COLORIZABLE_BG_CODES[${1##-bg-}]}"
+        return 0
+    fi
+    return 1
+}
+
+get_colorizable_codes () {
+    local CODES=$(
+        for CODE in $(
+            for ELEMENT in $@; do
+                get_colorizable_at_codes ${ELEMENT}
+                get_colorizable_fg_codes ${ELEMENT}
+                get_colorizable_bg_codes ${ELEMENT}
+            done
+        ); do
+            echo -n "${CODE};"
+        done
+    )
+    echo ${CODES%;}
+}
+
+get_strings () {
+    local -a SUFFIXES=(-at- -fg- -bg-)
+    local STRINGS=$(
+        for S in $@; do
+            in_array ${S:0:4} ${SUFFIXES[@]}
+            if [ $? -eq 1 ]; then
+                echo "${S} "
+            fi
+        done
+    )
+    echo ${STRINGS% }
+}
+
+colorize () {
+    local ESC=$(printf '\033')
+    local STRINGS=$(get_strings "$@")
+    local CODES=$(get_colorizable_codes $@)
+    if [ "${1}" = "-n" ]; then
+        echo -n "${ESC}[${CODES}m${STRINGS}${ESC}[m"
+    else
+        echo "${ESC}[${CODES}m${STRINGS}${ESC}[m"
+    fi
+}
+
+print_red () {
+    colorize $@ -fg-red
+}
+
+print_green () {
+    colorize $@ -fg-green
+}
+
+print_yellow () {
+    colorize $@ -fg-yellow
+}
+
+print_blue () {
+    colorize $@ -fg-blue
+}
+
+print_magenta () {
+    colorize $@ -fg-magenta
+}
+
+print_cyan () {
+    colorize $@ -fg-cyan
+}
+
+print_white () {
+    colorize $@ -fg-white
+}
+
+print_bg_red () {
+    colorize $@ -bg-red -fg-white
+}
+
+print_bg_green () {
+    colorize $@ -bg-green -at-bold
+}
+
+print_bg_yellow () {
+    colorize $@ -bg-yellow -fg-blue -at-bold
+}
+
+print_bg_blue () {
+    colorize $@ -bg-blue -fg-white
+}
+
+print_bg_magenta () {
+    colorize $@ -bg-magenta -fg-white
+}
+
+print_bg_cyan () {
+    colorize $@ -bg-cyan -at-bold
+}
+
+print_bg_white () {
+    colorize $@ -bg-white -fg-black
+}

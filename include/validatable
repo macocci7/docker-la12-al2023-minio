@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Checks if the needle exists in the haystack
+# @param string NEEDLE
+# @param array  HEYSTACK
+in_array () {
+    local -a HAYSTACK=($@)
+    local NEEDLE=${HAYSTACK[0]}
+    unset HAYSTACK[0]
+    for ELEMENT in ${HAYSTACK[@]}; do
+        if [ "${ELEMENT}" = "${NEEDLE}" ]; then
+            return 0 # found
+        fi
+    done
+    return 1 # not found
+}

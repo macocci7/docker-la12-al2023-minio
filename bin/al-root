@@ -1,10 +1,16 @@
 #!/bin/bash
+# @usage al-user
+# @description connects to root shell on al2023 container.
+# @example al-user
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/displayable
 
 CONTAINER=al2023
 USER=root
 SHELL=bash
-echo "#----------------------------------"
-echo "# container: [$CONTAINER]"
-echo "# user: [$USER]"
-echo "#----------------------------------"
+display_connection_info ${CONTAINER} ${USER}
 docker compose exec --user=$USER $CONTAINER $SHELL
