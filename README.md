@@ -98,7 +98,7 @@ This command performs:
 - `bin/mailpit-root`: connects to root shell on `mailpiit` container.
 - `bin/minio-cleanup`: clears whole MinIO data.
 - `bin/minio-root`: connects to root shell on `minio` container.
-- `bin/mysql-cleanup`: clears whole MySQL data. (run with `sudo`)
+- `bin/mysql-cleanup`: clears whole MySQL data.
 - `bin/mysql-root`: connects to root shell on `mysql` container.
 - `bin/mysql-sql`: runs sql on `mysql` container.
 - `bin/startup`: starts containers.
