@@ -1,0 +1,14 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/colorizable
+
+display_connection_info () {
+    print_yellow "#----------------------------------"
+    print_yellow "# container: [${1}]"
+    print_yellow "# user: [${2}]"
+    print_yellow "#----------------------------------"
+}

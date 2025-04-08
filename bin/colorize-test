@@ -1,0 +1,28 @@
+#!/bin/bash
+# @description tests colorizable functions.
+# @description displays colorized strings in your terminal.
+# @usage colorize-test
+# @example colorze-test
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/colorizable
+
+STRINGS="Hi, guys! How's it goin' with you?"
+
+print_red ${STRINGS}
+print_green ${STRINGS}
+print_yellow ${STRINGS}
+print_blue ${STRINGS}
+print_magenta ${STRINGS}
+print_cyan ${STRINGS}
+print_white ${STRINGS}
+print_bg_red ${STRINGS}
+print_bg_green ${STRINGS}
+print_bg_yellow ${STRINGS}
+print_bg_blue ${STRINGS}
+print_bg_magenta ${STRINGS}
+print_bg_cyan ${STRINGS}
+print_bg_white ${STRINGS}

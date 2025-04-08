@@ -2,6 +2,10 @@
 
 Skelton of docker environment with Laravel12, Amazon Linux 2023 and MinIO
 
+## Verified platform
+
+- Ubuntu 24.04.2 LTS (WSL2)
+
 ## Requirement
 
 - [Docker](https://www.docker.com/) installed
@@ -27,6 +31,7 @@ Skelton of docker environment with Laravel12, Amazon Linux 2023 and MinIO
 　│　　└─ mysql/data    [MySQL data]
 　├─ dump/               [For mysqldump]
 　├─ html/               [Laravel 12 project]
+　├─ include/            [Shell scripts for commands]
 　├─ laravel/            [Prepared files for Laravel]
 　├─ tests/              [Initial environment tests]
 　└─ docker-compose.yml  [Docker settings]
@@ -84,7 +89,9 @@ This command performs:
 - `bin/artisan`: runs artisan command on `al2023` container.
 - `bin/buildup`: builds and starts containers.
 - `bin/change-permissions`: chnages file[folder] permissions under `/var/www/html` on `al2023` container.
+- `bin/colorize-test` : tests colorizable functions.
 - `bin/create-project`: creates Laravel 12 project in `html/` on your host.
+- `bin/commands` : lists commands, or show details of commands.
 - `bin/export-data`: exports MySQL data from `mysql` container.
 - `bin/import-data`: imports MySQL data into `mysql` container.
 - `bin/initial-settings`: performs initial settings on `al2023` container.
@@ -93,7 +100,14 @@ This command performs:
 - `bin/minio-root`: connects to root shell on `minio` container.
 - `bin/mysql-cleanup`: clears whole MySQL data. (run with `sudo`)
 - `bin/mysql-root`: connects to root shell on `mysql` container.
+- `bin/mysql-sql`: runs sql on `mysql` container.
 - `bin/startup`: starts containers.
+
+To see more details, run the command:
+
+```bash
+bin/commands
+```
 
 ## LICENSE
 

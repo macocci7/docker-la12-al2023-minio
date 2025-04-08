@@ -1,3 +1,6 @@
 #!/bin/bash
+# @description starts containers.
+# @usage startup
+# @example startup
 
 docker compose up -d

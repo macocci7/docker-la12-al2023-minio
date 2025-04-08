@@ -1,6 +1,16 @@
 #!/bin/bash
+# @usage change-permissions
+# @description chnages file[folder] permissions under /var/www/html on al2023 container.
+# @example change-permissions
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/displayable
 
 CONTAINER=al2023
 USER=root
 SHELL=bash
+display_connection_info ${CONTAINER} ${USER}
 docker compose exec --user=$USER $CONTAINER $SHELL -l -c /${USER}/bin/change-permissions

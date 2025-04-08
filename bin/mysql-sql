@@ -1,0 +1,23 @@
+#!/bin/bash
+# @description runs sql on mysql container.
+# @description arbitrary queries can be run.
+# @description but database is specified in this script.
+# @usage mysql-sql <sql>
+# @example mysql-sql 'show tables;'
+# @example mysql-sql 'use mysql; show tables;'
+# @example mysql-sql 'select User, Host from mysql.user;'
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/displayable
+
+CONTAINER=mysql
+USER=root
+SHELL=bash
+DATABASE=laravel
+MYSQL_COMMAND="mysql --defaults-extra-file=/root/db-access.cnf -D $DATABASE -e'${*}'"
+display_connection_info ${CONTAINER} ${USER}
+print_cyan "> ${MYSQL_COMMAND}"
+docker compose exec --user=$USER $CONTAINER $SHELL -c "$MYSQL_COMMAND"

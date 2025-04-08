@@ -1,0 +1,17 @@
+#!/bin/bash
+
+can_continue () {
+
+    local CAN_CONTINUE=""
+
+    while [[ ! $CAN_CONTINUE =~ ^[ny]$ ]]; do
+        echo -n "Would you like to continue?[y/n]:"
+        read CAN_CONTINUE
+    done
+
+    if [ "$CAN_CONTINUE" = "n" ]; then
+        return 1
+    else
+        return 0
+    fi
+}

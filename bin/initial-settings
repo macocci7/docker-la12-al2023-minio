@@ -1,32 +1,36 @@
 #!/bin/bash
+# @description performs initial settings on al2023 container.
+# @description - changes file[folder] permissions
+# @description - enables and starts services
+# @usage initial-settings
+# @example initial-settings
 
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
 CONTAINER=al2023
 USER=root
 SHELL=bash
 
+# imports external scripts
+. ${INCLUDE_DIR}/colorizable
+. ${INCLUDE_DIR}/continueable
+. ${INCLUDE_DIR}/displayable
+
 echo
-echo "This script is going to execute initial settings on [$CONTAINER] container."
+print_yellow "This script is going to execute initial settings on [$CONTAINER] container."
 echo "- Changing ownerships of files[folders] in [/var/www/html] (every time)"
 echo "- Changing permissions of files[folders] in [/var/www/html] (every time)"
 echo "- Enabling and starting services (every time)"
 echo
 
-CAN_CONTINUE=""
-while [[ ! $CAN_CONTINUE =~ ^[ny]$ ]]; do
-	echo -n "Would you like to continue?[y/n]:"
-	read CAN_CONTINUE
-done
-
-if [ "$CAN_CONTINUE" = "n" ]; then
-	echo "OK! Operation aborted."
-	exit
+can_continue
+if [ $? -eq 1 ]; then
+	print_bg_red "OK! Operation aborted."
+	exit 1
 fi
 
-echo "OK! Continueing the process..."
+print_bg_green "OK! Continueing the process..."
 echo
 
-echo "#----------------------------------"
-echo "# container: [$CONTAINER]"
-echo "# user: [$USER]"
-echo "#----------------------------------"
+display_connection_info ${CONTAINER} ${USER}
 docker compose exec --user=$USER $CONTAINER $SHELL /$USER/bin/initial-settings
