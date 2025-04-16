@@ -1,0 +1,72 @@
+#!/bin/bash
+# @description removes all files and directories under html/.
+# @description super user priviledges required.
+# @usage html-cleanup
+# @example html-cleanup
+
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
+DATA_DIR=$(cd ${SCRIPT_DIR}/../html && pwd)
+
+# imports external scripts
+. ${INCLUDE_DIR}/colorizable
+
+is_empty_dir () {
+    ENTRIES=`ls -a -I '.' -I '..' $1`
+    if [ -z "${ENTRIES}" ]; then
+        # empty
+        return 0
+    else
+        # not empty
+        return 1
+    fi
+}
+
+clean_up_dir () {
+    if [ ! -d $1 ]; then
+        print_bg_red "Directory [${1}] not found."
+        print_bg_red "Operation aborted."
+        exit 1
+    fi
+    if [ ! -x $1 ]; then
+        print_bg_red "No permission to enter [${1}]."
+        print_bg_red "Operation aborted."
+        exit 1
+    fi
+    cd $1
+    for ENTRY in `ls -a -I '.' -I '..'`; do
+        sudo rm -rf $ENTRY
+    done
+}
+
+if [ ! -d $DATA_DIR ]; then
+    print_bg_red "Directory [${DATA_DIR}] not found."
+    print_bg_red "Operation aborted."
+    exit 1
+fi
+
+is_empty_dir $DATA_DIR
+if [ $? -eq 0 ]; then
+    print_green "Directory [${DATA_DIR}] is empty."
+    exit
+fi
+
+print_yellow "Directory [${DATA_DIR}] is not empty."
+CAN_CLEAN_UP=""
+while [[ ! $CAN_CLEAN_UP =~ ^[ny]$ ]]; do
+    echo -n "Are you sure you want to delete whole data? [y/n]:"
+    read CAN_CLEAN_UP
+done
+if [ $CAN_CLEAN_UP = "n" ]; then
+    print_bg_red "Operation aborted."
+    exit 1
+fi
+
+print_cyan "Cleaning up directory [${DATA_DIR}]..."
+clean_up_dir $DATA_DIR
+if [ $? -ne 0 ]; then
+    print_bg_red "Operation failed!"
+    exit 1
+fi
+
+print_green "Completed!"

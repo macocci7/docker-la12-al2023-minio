@@ -40,7 +40,7 @@ services:
     networks:
       - skynet
   minio:
-    image: minio/minio:RELEASE.2025-03-12T18-04-18Z
+    image: minio/minio:RELEASE.2025-04-08T15-41-24Z
     ports:
         - '9000:9000'
         - '9001:9001'
