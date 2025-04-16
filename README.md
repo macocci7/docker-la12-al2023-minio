@@ -93,6 +93,7 @@ This command performs:
 - `bin/create-project`: creates Laravel 12 project in `html/` on your host.
 - `bin/commands` : lists commands, or show details of commands.
 - `bin/export-data`: exports MySQL data from `mysql` container.
+- `bin/html-cleanup`: removes all files and directories under `html/`.
 - `bin/import-data`: imports MySQL data into `mysql` container.
 - `bin/initial-settings`: performs initial settings on `al2023` container.
 - `bin/mailpit-root`: connects to root shell on `mailpiit` container.
