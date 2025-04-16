@@ -50,7 +50,7 @@ RUN dnf install \
     -y
 
 WORKDIR /root
-ARG php_version="8.4.5"
+ARG php_version="8.4.6"
 RUN curl https://www.php.net/distributions/php-${php_version}.tar.gz -o php-${php_version}.tar.gz \
     && tar xvfz php-${php_version}.tar.gz \
     && cd php-${php_version} \

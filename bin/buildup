@@ -134,7 +134,7 @@ echo
 #     - Storage download test (php artisan minio:get)
 print_bg_green "Running environment tests"
 check_command bin/artisan test
-check_command html/vendor/bin/phpunit --testdox --color tests
+check_command html/vendor/bin/phpunit --testdox --color tests --do-not-cache-result
 echo
 
 print_bg_cyan "All done!" -at-bold

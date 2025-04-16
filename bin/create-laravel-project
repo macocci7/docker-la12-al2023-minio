@@ -1,6 +1,7 @@
 #!/bin/bash
 # @usage create-laravel-project
 # @description creates Laravel 12 project in html/ on your host.
+# @description super user priviledges required.
 # @example create-laravel-project
 
 LARAVEL_VERSION=12
@@ -34,14 +35,9 @@ clean_up_dir () {
         print_bg_red "Operation aborted."
         exit 1
     fi
-    if [ ! -w $1 ]; then
-        print_bg_red "No permission to remove files in [${1}]."
-        print_bg_red "Operation aborted."
-        exit 1
-    fi
     cd $1
     for ENTRY in `ls -a -I '.' -I '..'`; do
-        rm -rf $ENTRY
+        sudo rm -rf $ENTRY
     done
 }
 
