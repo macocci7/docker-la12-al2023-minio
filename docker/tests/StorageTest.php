@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Feature\Environment;
+namespace Tests;
 
-require_once __DIR__ . '/../html/vendor/autoload.php';
+require_once __DIR__ . '/../../html/vendor/autoload.php';
 
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -14,7 +14,7 @@ class StorageTest extends TestCase
         $key = \Carbon\Carbon::now()->format('Ymd-His-v');
 
         // Stores a file to MinIO
-        $result = exec(__DIR__ . '/../bin/artisan minio:put --key=' . $key, $output, $retval);
+        $result = exec(__DIR__ . '/../../bin/artisan minio:put --key=' . $key, $output, $retval);
         $this->assertTrue($result !== false);
 
         // Checks the file stored in MinIO
@@ -23,7 +23,7 @@ class StorageTest extends TestCase
         $path = sprintf('%s/%s', $key, $file);
         $contents = Storage::disk('s3')->get($path);
         // Compares the retrieved file with the local file
-        $file_path = __DIR__ . '/../html/' . $file;
+        $file_path = __DIR__ . '/../../html/' . $file;
         $this->assertSame($contents, file_get_contents($file_path));
     }
 
@@ -37,7 +37,7 @@ class StorageTest extends TestCase
         foreach ($files as $file) {
             $expected[] = Storage::disk('s3')->url($file);
         }
-        $result = exec(__DIR__ . '/../bin/artisan minio:get', $output, $retval);
+        $result = exec(__DIR__ . '/../../bin/artisan minio:get', $output, $retval);
         $this->assertTrue($result !== false);
         $this->assertSame($expected, array_slice($output, 4));
         $this->assertSame(0, $retval);
