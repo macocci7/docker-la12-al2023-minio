@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Feature\Environment;
+namespace Tests;
 
-require_once __DIR__ . '/../html/vendor/autoload.php';
+require_once __DIR__ . '/../../html/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +17,7 @@ class MailTest extends TestCase
         $body = 'Hello!';
 
         // Sends an email using artisan command
-        $result = exec(__DIR__ . '/../bin/artisan mail:send --key=' . $key, $output, $retval);
+        $result = exec(__DIR__ . '/../../bin/artisan mail:send --key=' . $key, $output, $retval);
         $this->assertTrue($result !== false);
 
         sleep(1);
@@ -53,7 +53,7 @@ class MailTest extends TestCase
         $body = 'Hello!';
 
         // Queues a job to send an email using artisan command
-        $result = exec(__DIR__ . '/../bin/artisan mail:queue --key=' . $key, $output, $retval);
+        $result = exec(__DIR__ . '/../../bin/artisan mail:queue --key=' . $key, $output, $retval);
         $this->assertTrue($result !== false);
 
         sleep(3);

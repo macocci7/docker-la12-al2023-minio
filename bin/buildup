@@ -87,13 +87,13 @@ echo
 
 # - Copies .env.local to .env
 print_bg_green "Copying .env.local to .env"
-check_command cp -f laravel/.env.local html/.env.local
-check_command cp -f laravel/.env.local html/.env
+check_command cp -f docker/laravel/.env.local html/.env.local
+check_command cp -f docker/laravel/.env.local html/.env
 echo
 
 # - Layouts Laravel files for environment testing.
 print_bg_green "Layouting Laravel files for environment testing."
-check_command cp -rf laravel/* html/
+check_command cp -rf docker/laravel/* html/
 echo
 
 # - Creates TLS certs for MinIO
@@ -134,7 +134,7 @@ echo
 #     - Storage download test (php artisan minio:get)
 print_bg_green "Running environment tests"
 check_command bin/artisan test
-check_command html/vendor/bin/phpunit --testdox --color tests --do-not-cache-result
+check_command html/vendor/bin/phpunit --testdox --color docker/tests --do-not-cache-result
 echo
 
 print_bg_cyan "All done!" -at-bold
