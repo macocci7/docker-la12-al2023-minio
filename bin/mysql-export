@@ -1,7 +1,7 @@
 #!/bin/bash
 # @description exports MySQL data from mysql container.
-# @usage export-data
-# @example export-data
+# @usage mysql-export
+# @example mysql-export
 
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)

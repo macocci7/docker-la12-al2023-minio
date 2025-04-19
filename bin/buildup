@@ -82,7 +82,7 @@ echo
 
 # - Creates a new Laravel 12 project
 print_bg_green "Creating a new Laravel 12 project"
-check_command ${SCRIPT_DIR}/create-laravel-project
+check_command ${SCRIPT_DIR}/laravel-new
 echo
 
 # - Copies .env.local to .env

@@ -1,8 +1,8 @@
 #!/bin/bash
-# @usage create-laravel-project
+# @usage laravel-new
 # @description creates Laravel 12 project in html/ on your host.
 # @description super user priviledges required.
-# @example create-laravel-project
+# @example laravel-new
 
 LARAVEL_VERSION=12
 PROJECT_NAME='html'
