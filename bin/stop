@@ -11,4 +11,4 @@ INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
 . ${INCLUDE_DIR}/runnable
 
 print_yellow "Stopping docker containers..."
-run_command docker compose down
+run_command docker compose stop

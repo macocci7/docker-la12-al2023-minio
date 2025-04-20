@@ -11,4 +11,4 @@ INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
 . ${INCLUDE_DIR}/runnable
 
 print_yellow "Starting docker containers..."
-run_command docker compose up -d
+run_command docker compose start
