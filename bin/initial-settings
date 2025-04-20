@@ -15,6 +15,7 @@ SHELL=bash
 . ${INCLUDE_DIR}/colorizable
 . ${INCLUDE_DIR}/continueable
 . ${INCLUDE_DIR}/displayable
+. ${INCLUDE_DIR}/runnable
 
 echo
 print_yellow "This script is going to execute initial settings on [$CONTAINER] container."
@@ -33,4 +34,4 @@ print_bg_green "OK! Continueing the process..."
 echo
 
 display_connection_info ${CONTAINER} ${USER}
-docker compose exec --user=$USER $CONTAINER $SHELL /$USER/bin/initial-settings
+run_command docker compose exec --user=$USER $CONTAINER $SHELL /$USER/bin/initial-settings

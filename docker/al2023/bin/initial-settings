@@ -2,6 +2,9 @@
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
+# initial user settings
+${SCRIPT_DIR}/initial-user-settings
+
 # changing permissions
 ${SCRIPT_DIR}/change-permissions
 

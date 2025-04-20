@@ -3,9 +3,5 @@ FROM mysql:8.4.5
 
 COPY ./my.cnf /etc/mysql/conf.d/my.cnf
 COPY ./db-access.cnf /root/db-access.cnf
-RUN mkdir /root/bin
-COPY ./bin/import-data /root/bin/import-data
-COPY ./bin/export-data /root/bin/export-data
-RUN chmod +x /root/bin/*
 
 EXPOSE 3306

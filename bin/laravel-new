@@ -12,6 +12,7 @@ INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
 
 # imports external scripts
 . ${INCLUDE_DIR}/colorizable
+. ${INCLUDE_DIR}/runnable
 
 is_empty_dir () {
     ENTRIES=`ls -a -I '.' -I '..' $1`
@@ -24,46 +25,13 @@ is_empty_dir () {
     fi
 }
 
-clean_up_dir () {
-    if [ ! -d $1 ]; then
-        print_bg_red "Directory [${1}] not found."
-        print_bg_red "Operation aborted."
-        exit 1
-    fi
-    if [ ! -x $1 ]; then
-        print_bg_red "No permission to enter [${1}]."
-        print_bg_red "Operation aborted."
-        exit 1
-    fi
-    cd $1
-    for ENTRY in `ls -a -I '.' -I '..'`; do
-        sudo rm -rf $ENTRY
-    done
-}
-
 echo "Creating a new Laravel ${LARAVEL_VERSION} Project..."
 is_empty_dir $PROJECT_DIR
 if [ $? -eq 1 ]; then
-    print_bg_red "Project directory [${PROJECT_DIR}] is not empty."
-    CAN_CLEAN_UP=""
-    while [[ ! "$CAN_CLEAN_UP" =~ ^[ny]$ ]]; do
-        echo -n "Would you like to clean up? [y/n]:"
-        read CAN_CLEAN_UP
-    done
-    if [ $CAN_CLEAN_UP = "y" ]; then
-        echo "Cleaning up directory [${PROJECT_DIR}]..."
-        clean_up_dir $PROJECT_DIR
-        print_bg_green "Done."
-    else
-        print_bg_red "Operation aborted."
-        exit 1
-    fi
+    echo "Cleaning up directory [${PROJECT_DIR}]..."
+    run_command ${SCRIPT_DIR}/html-cleanup
 fi
 
-COMMAND="composer create-project laravel/laravel:^${LARAVEL_VERSION} ${PROJECT_DIR}"
-print_cyan "> ${COMMAND}"
-$COMMAND
-cd ${PROJECT_DIR}
-COMMAND='composer require league/flysystem-aws-s3-v3:^3.0 --with-all-dependencies'
-print_cyan "> ${COMMAND}"
-$COMMAND
+run_command composer create-project laravel/laravel:^${LARAVEL_VERSION} ${PROJECT_DIR}
+run_command cd ${PROJECT_DIR}
+run_command composer require league/flysystem-aws-s3-v3:^3.0 --with-all-dependencies

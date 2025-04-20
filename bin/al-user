@@ -8,9 +8,10 @@ INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
 
 # imports external scripts
 . ${INCLUDE_DIR}/displayable
+. ${INCLUDE_DIR}/runnable
 
 CONTAINER=al2023
 USER=ec2-user
 SHELL=bash
 display_connection_info ${CONTAINER} ${USER}
-docker compose exec --user=$USER $CONTAINER $SHELL
+run_command docker compose exec --user=$USER $CONTAINER $SHELL

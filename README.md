@@ -28,12 +28,12 @@ Skelton of docker environment with Laravel12, Amazon Linux 2023 and MinIO
 　├─ docker/             [Fixtures for docker]
 　│　　├─ mailpit/data  [Mailpit data]
 　│　　├─ minio/data    [MinIO data]
-　│　　└─ mysql/data    [MySQL data]
+　│　　├─ mysql/data    [MySQL data]
+　│　　├─ laravel/      [Prepared files for Laravel]
+　│　　└─ tests/        [Initial environment tests]
 　├─ dump/               [For mysqldump]
 　├─ html/               [Laravel 12 project]
 　├─ include/            [Shell scripts for commands]
-　├─ laravel/            [Prepared files for Laravel]
-　├─ tests/              [Initial environment tests]
 　└─ docker-compose.yml  [Docker settings]
 </pre>
 
@@ -90,19 +90,20 @@ This command performs:
 - `bin/buildup`: builds and starts containers.
 - `bin/change-permissions`: chnages file[folder] permissions under `/var/www/html` on `al2023` container.
 - `bin/colorize-test` : tests colorizable functions.
-- `bin/create-project`: creates Laravel 12 project in `html/` on your host.
 - `bin/commands` : lists commands, or show details of commands.
-- `bin/export-data`: exports MySQL data from `mysql` container.
 - `bin/html-cleanup`: removes all files and directories under `html/`.
-- `bin/import-data`: imports MySQL data into `mysql` container.
 - `bin/initial-settings`: performs initial settings on `al2023` container.
+- `bin/laravel-new`: creates Laravel 12 project in `html/` on your host.
 - `bin/mailpit-root`: connects to root shell on `mailpiit` container.
 - `bin/minio-cleanup`: clears whole MinIO data.
 - `bin/minio-root`: connects to root shell on `minio` container.
 - `bin/mysql-cleanup`: clears whole MySQL data.
+- `bin/mysql-export`: exports MySQL data from `mysql` container.
+- `bin/mysql-import`: imports MySQL data into `mysql` container.
 - `bin/mysql-root`: connects to root shell on `mysql` container.
 - `bin/mysql-sql`: runs sql on `mysql` container.
 - `bin/startup`: starts containers.
+- `bin/stop`: stops containers.
 
 To see more details, run the command:
 

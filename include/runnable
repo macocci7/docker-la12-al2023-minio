@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# - Run command
+run_command () {
+    COMMAND="$*"
+    print_cyan "> ${COMMAND}"
+    $COMMAND
+    if [ $? -ne 0 ]; then
+        print_bg_red "Failed to run: [${COMMAND}]"
+        print_bg_red "Operation aborted."
+        exit 1
+    fi
+}
