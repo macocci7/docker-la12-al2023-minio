@@ -10,6 +10,7 @@ DATA_DIR=$(cd ${SCRIPT_DIR}/../docker/mysql/data && pwd)
 
 # imports external scripts
 . ${INCLUDE_DIR}/colorizable
+. ${INCLUDE_DIR}/runnable
 
 is_empty_dir () {
     ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' $1`
@@ -62,11 +63,7 @@ if [ $CAN_CLEAN_UP = "n" ]; then
     exit 1
 fi
 
-print_cyan "Cleaning up directory [${DATA_DIR}]..."
-clean_up_dir $DATA_DIR
-if [ $? -ne 0 ]; then
-    print_bg_red "Operation failed!"
-    exit 1
-fi
+print_green "Cleaning up directory [${DATA_DIR}]..."
+run_command clean_up_dir $DATA_DIR
 
 print_green "Completed!"

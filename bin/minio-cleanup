@@ -11,6 +11,7 @@ BUCKET="laravel"
 
 # imports external scripts
 . ${INCLUDE_DIR}/colorizable
+. ${INCLUDE_DIR}/runnable
 
 clean_up_dir () {
     if [ ! -d $1 ]; then
@@ -48,29 +49,18 @@ if [ ! -d $DATA_DIR ]; then
     exit 1
 fi
 
-# Checks in the data directory
-DIR=${DATA_DIR}
+# Checks the data directory
 ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' ${DATA_DIR}`
 if [ -z "${ENTRIES}" ]; then
-    print_green "Directory [${DIR}] is empty."
+    print_green "Directory [${DATA_DIR}] is empty."
     exit;
 else
-    print_yellow "Directory [${DIR}] is not empty."
-    echo "Cleaning up [${DIR}]..."
-    clean_up_dir $DIR
-    if [ $? -ne 0 ]; then
-        print_bg_red "Operation failed!"
-        exit 1
-    fi
+    print_yellow "Directory [${DATA_DIR}] is not empty."
+    echo "Cleaning up [${DATA_DIR}]..."
+    run_command clean_up_dir $DATA_DIR
 fi
 
 # Creates a bucket directory
-DIR=${DATA_DIR}/${BUCKET}
-mkdir ${DIR}
-if [ $? -ne 0 ]; then
-    print_bg_red "Failed to create [${DIR}]."
-    print_bg_red "Operation aborted."
-    exit 1
-fi
+run_command mkdir ${DATA_DIR}/${BUCKET}
 
 print_green "Completed!"

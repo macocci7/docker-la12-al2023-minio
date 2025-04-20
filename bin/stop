@@ -1,7 +1,7 @@
 #!/bin/bash
-# @description starts containers.
-# @usage startup
-# @example startup
+# @description stops containers.
+# @usage stop
+# @example stop
 
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
@@ -10,5 +10,5 @@ INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
 . ${INCLUDE_DIR}/displayable
 . ${INCLUDE_DIR}/runnable
 
-print_yellow "Starting docker containers..."
-run_command docker compose start
+print_yellow "Stopping docker containers..."
+run_command docker compose stop

@@ -30,18 +30,7 @@ INCLUDE_DIR=$(cd ${SCRIPT_DIR}/../include && pwd)
 
 # imports external scripts
 . ${INCLUDE_DIR}/colorizable
-
-# - Check commands
-check_command () {
-    COMMAND="$*"
-    print_cyan "> ${COMMAND}"
-    $COMMAND
-    if [ $? -ne 0 ]; then
-        print_bg_red "Failed to run: [${COMMAND}]"
-        print_bg_red "Operation aborted."
-        exit 1
-    fi
-}
+. ${INCLUDE_DIR}/runnable
 
 # Confirmation
 echo
@@ -60,51 +49,47 @@ echo
 
 # Command test
 print_bg_green "Checking essential commands"
-check_command php --version
-check_command composer --version
-check_command echo -n "mkcert:" && mkcert --version
-check_command docker --version
+run_command php --version
+run_command composer --version
+run_command echo -n "mkcert:" && mkcert --version
+run_command docker --version
 echo
 
 # Cleans up MySQL data
 print_bg_green "Cleaning up MySQL data"
-DATA_DIR=$(cd ${SCRIPT_DIR}/../docker/mysql/data && pwd)
-#ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' ${DATA_DIR}`
-#if [ -n "${ENTRIES}" ]; then
-    check_command ${SCRIPT_DIR}/mysql-cleanup
-#fi
+run_command ${SCRIPT_DIR}/mysql-cleanup
 echo
 
 # Cleans up MinIO data
 print_bg_green "Cleaning up MinIO data"
-check_command ${SCRIPT_DIR}/minio-cleanup
+run_command ${SCRIPT_DIR}/minio-cleanup
 echo
 
 # - Creates a new Laravel 12 project
 print_bg_green "Creating a new Laravel 12 project"
-check_command ${SCRIPT_DIR}/create-laravel-project
+run_command ${SCRIPT_DIR}/laravel-new
 echo
 
 # - Copies .env.local to .env
 print_bg_green "Copying .env.local to .env"
-check_command cp -f laravel/.env.local html/.env.local
-check_command cp -f laravel/.env.local html/.env
+run_command cp -f docker/laravel/.env.local html/.env.local
+run_command cp -f docker/laravel/.env.local html/.env
 echo
 
 # - Layouts Laravel files for environment testing.
 print_bg_green "Layouting Laravel files for environment testing."
-check_command cp -rf laravel/* html/
+run_command cp -rf docker/laravel/* html/
 echo
 
 # - Creates TLS certs for MinIO
 print_bg_green "Creating TLS certs for MinIO"
-check_command mkcert -install
-check_command mkcert -cert-file ./docker/minio/certs/public.crt -key-file ./docker/minio/certs/private.key localhost
+run_command mkcert -install
+run_command mkcert -cert-file ./docker/minio/certs/public.crt -key-file ./docker/minio/certs/private.key localhost
 echo
 
 # - Builds containers
 print_bg_green "Building Containers"
-check_command docker compose up -d
+run_command docker compose up -d
 echo
 
 # - Runs initial settings
@@ -112,8 +97,8 @@ echo
 #     - Performs database migration (MySQL)
 #     - Enables and boots services
 print_bg_green "Running initial settings"
-check_command bin/change-permissions
-check_command bin/artisan key:generate
+run_command bin/change-permissions
+run_command bin/artisan key:generate
 
 SECONDS=12
 echo "Waiting for ${SECONDS} seconds for MySQL to initialize..."
@@ -122,8 +107,8 @@ for S in $(seq 1 ${SECONDS} | sort -nr); do
     sleep 1
 done
 
-check_command bin/artisan migrate
-check_command bin/initial-settings
+run_command bin/artisan migrate
+run_command bin/initial-settings
 echo
 
 # - Runs environment tests
@@ -133,8 +118,8 @@ echo
 #     - Storage upload test (php artisan minio:put)
 #     - Storage download test (php artisan minio:get)
 print_bg_green "Running environment tests"
-check_command bin/artisan test
-check_command html/vendor/bin/phpunit --testdox --color tests --do-not-cache-result
+run_command bin/artisan test
+run_command html/vendor/bin/phpunit --testdox --color docker/tests --do-not-cache-result
 echo
 
 print_bg_cyan "All done!" -at-bold

@@ -128,12 +128,6 @@ COPY ./php-fpm/www.conf /usr/local/php/etc/php-fpm.d/
 
 COPY ./systemd/systemd-networkd-wait-online.service /usr/lib/systemd/system/
 
-RUN mkdir /root/bin
-COPY ./bin/* /root/bin/
-
-RUN chmod +x /root/bin/* \
-    && /root/bin/initial-user-settings
-
 WORKDIR /var/www/html
 
 # starting process

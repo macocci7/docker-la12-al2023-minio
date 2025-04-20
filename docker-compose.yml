@@ -8,7 +8,8 @@ services:
       - '80:80'
       - '443:443'
     volumes:
-      - './html:/var/www/html'
+      - ./docker/al2023/bin:/root/bin
+      - ./html:/var/www/html
     networks:
       - skynet
     depends_on:
@@ -21,6 +22,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/bin:/root/bin
       - ./dump:/root/dump
     ports:
         - '3306:3306'
