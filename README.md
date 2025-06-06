@@ -4,7 +4,7 @@ Skelton of docker environment with Laravel12, Amazon Linux 2023 and MinIO
 
 ## Verified platform
 
-- Ubuntu 24.04.2 LTS (WSL2)
+- Ubuntu 24.04.4 LTS (WSL2 on Windows11)
 
 ## Requirement
 
@@ -15,10 +15,10 @@ Skelton of docker environment with Laravel12, Amazon Linux 2023 and MinIO
 
 ## Containers to be built
 
-- al2023: [Amazon Linux 2023](https://hub.docker.com/layers/library/amazonlinux/2023.7.20250331.0/images/sha256-d2b7c9c18d23a992c5364d51f3ec62f4e5d47b6d0b6dfc35078104d414fe48ba) ([nginx](https://nginx.org/) / [PHP 8.4.6](https://www.php.net/ChangeLog-8.php#8.4.6) / [Laravel 12](https://laravel.com/docs/12.x))
-- mysql: [MySQL Server 8.4.5](https://hub.docker.com/layers/library/mysql/8.4.5/images/sha256-dc6acfdfcf111858d8ec72daa23308a54377dc458d10ba4dd9484de2ea3cbc46)
-- mailpit: [axllent/mailpit:v1.24.1](https://hub.docker.com/layers/axllent/mailpit/v1.24.1/images/sha256-29d7973983e738f71fa00886fbb286e95c1c13f41d18e5c99b7b3e4fb1d2087f)
-- minio: [minio/minio:RELEASE.2025-04-08T15-41-24Z](https://hub.docker.com/layers/minio/minio/RELEASE.2025-04-08T15-41-24Z/images/sha256-79f5beef4fe27220c1b55fe8d38a4dc88544870891b871bea6fe113b90256297)
+- al2023: [Amazon Linux 2023](https://hub.docker.com/layers/library/amazonlinux/2023.7.20250512.0/images/sha256-52aa6628323e60216e3006169661ad958ba0b7f6cb8ff269a2b96eb4563e24a7) ([nginx](https://nginx.org/) / [PHP 8.4.8](https://www.php.net/ChangeLog-8.php#8.4.8) / [Laravel 12](https://laravel.com/docs/12.x))
+- mysql: [MySQL Server 9.3.0](https://hub.docker.com/layers/library/mysql/9.3.0/images/sha256-167ae6517bc1c3d0d9fb447a6fe7fce1a8d783894568433fdff6937dd076a3e1)
+- mailpit: [axllent/mailpit:v1.25.1](https://hub.docker.com/layers/axllent/mailpit/v1.25.1/images/sha256-1e87e790c5e0ada29ef682dbd185c59a270fbd31b088aa2fdeffa3cd795fe10c)
+- minio: [minio/minio:RELEASE.2025-05-24T17-08-30Z](https://hub.docker.com/layers/minio/minio/RELEASE.2025-05-24T17-08-30Z/images/sha256-bca5c8a966b9adede74c531db519fa0ac9e4684b824fde9707ac558314590818)
 
 ## Project file structure
 
@@ -39,7 +39,16 @@ Skelton of docker environment with Laravel12, Amazon Linux 2023 and MinIO
 
 ## Building Containers
 
-Run the command below to build and start containers.
+Add a line below into `hosts` file on your host OS.
+
+- linux/mac: `/etc/hosts`
+- windows: `C:\Windows\System32\drivers\etc\hosts`
+
+```
+127.0.0.1       minio
+```
+
+Then, run the command below to build and start containers.
 
 ```bash
 bin/buildup
@@ -76,12 +85,6 @@ This command performs:
 
     [https://minio:9001/](https://minio:9001/)
 
-    is also available after adding a line below into `hosts` file on your host OS.
-    - linux/mac: `/etc/hosts`
-    - windows: `C:\Windows\System32\drivers\etc\hosts`
-    ```
-    127.0.0.1       minio
-    ```
 ## Commands
 
 - `bin/al-root`: connects to root shell on `al2023` container.
