@@ -98,6 +98,7 @@ This command performs:
 - `bin/initial-settings`: performs initial settings on `al2023` container.
 - `bin/laravel-new`: creates Laravel 12 project in `html/` on your host.
 - `bin/mailpit-root`: connects to root shell on `mailpiit` container.
+- `bin/minio-connect`: connects to mysql database `laravel`.
 - `bin/minio-cleanup`: clears whole MinIO data.
 - `bin/minio-root`: connects to root shell on `minio` container.
 - `bin/mysql-cleanup`: clears whole MySQL data.
