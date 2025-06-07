@@ -53,7 +53,6 @@ fi
 ENTRIES=`ls -a -I '.' -I '..' -I '.gitignore' ${DATA_DIR}`
 if [ -z "${ENTRIES}" ]; then
     print_green "Directory [${DATA_DIR}] is empty."
-    exit;
 else
     print_yellow "Directory [${DATA_DIR}] is not empty."
     echo "Cleaning up [${DATA_DIR}]..."
