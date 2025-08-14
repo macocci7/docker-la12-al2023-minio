@@ -31,7 +31,7 @@ services:
     networks:
       - skynet
   mailpit:
-    image: axllent/mailpit:v1.25.1
+    image: axllent/mailpit:v1.27.4
     ports:
       - '1025:1025'
       - '8025:8025'
@@ -42,7 +42,7 @@ services:
     networks:
       - skynet
   minio:
-    image: minio/minio:RELEASE.2025-05-24T17-08-30Z
+    image: minio/minio:RELEASE.2025-07-23T15-54-02Z
     ports:
         - '9000:9000'
         - '9001:9001'

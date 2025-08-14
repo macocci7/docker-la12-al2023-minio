@@ -15,10 +15,10 @@ Skelton of docker environment with Laravel12, Amazon Linux 2023 and MinIO
 
 ## Containers to be built
 
-- al2023: [Amazon Linux 2023](https://hub.docker.com/layers/library/amazonlinux/2023.7.20250512.0/images/sha256-52aa6628323e60216e3006169661ad958ba0b7f6cb8ff269a2b96eb4563e24a7) ([nginx](https://nginx.org/) / [PHP 8.4.8](https://www.php.net/ChangeLog-8.php#8.4.8) / [Laravel 12](https://laravel.com/docs/12.x))
-- mysql: [MySQL Server 9.3.0](https://hub.docker.com/layers/library/mysql/9.3.0/images/sha256-167ae6517bc1c3d0d9fb447a6fe7fce1a8d783894568433fdff6937dd076a3e1)
-- mailpit: [axllent/mailpit:v1.25.1](https://hub.docker.com/layers/axllent/mailpit/v1.25.1/images/sha256-1e87e790c5e0ada29ef682dbd185c59a270fbd31b088aa2fdeffa3cd795fe10c)
-- minio: [minio/minio:RELEASE.2025-05-24T17-08-30Z](https://hub.docker.com/layers/minio/minio/RELEASE.2025-05-24T17-08-30Z/images/sha256-bca5c8a966b9adede74c531db519fa0ac9e4684b824fde9707ac558314590818)
+- al2023: [Amazon Linux 2023](https://hub.docker.com/layers/library/amazonlinux/2023.8.20250808.1/images/sha256-5a065665e78e8de28c7a334f19b7fd9fd7f1888f579462f28b731ae0d30a6f19) ([nginx](https://nginx.org/) / [PHP 8.4.11](https://www.php.net/ChangeLog-8.php#8.4.11) / [Laravel 12](https://laravel.com/docs/12.x))
+- mysql: [MySQL Server 9.4.0](https://hub.docker.com/layers/library/mysql/9.4.0/images/sha256-aaae6655f7e4ffb05fb9820075721bfaaf737144ed95e9b9fe0e20583a7a3568)
+- mailpit: [axllent/mailpit:v1.27.4](https://hub.docker.com/layers/axllent/mailpit/v1.27.4/images/sha256-ac71e967509f83e0f473bd8e6cac02c5984d7f77ebfef851f67963e598549ddf)
+- minio: [minio/minio:RELEASE.2025-07-23T15-54-02Z](https://hub.docker.com/layers/minio/minio/RELEASE.2025-07-23T15-54-02Z/images/sha256-f6efb212cad3b62f78ca02339f16d8bc28d5bb2fbe792dfc21225c6037d2af8b)
 
 ## Project file structure
 
