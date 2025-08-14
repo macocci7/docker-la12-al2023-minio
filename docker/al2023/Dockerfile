@@ -1,4 +1,4 @@
-ARG amazonlinux_version="2023.7.20250512.0"
+ARG amazonlinux_version="2023.8.20250808.1"
 
 FROM amazonlinux:${amazonlinux_version}
 
@@ -50,7 +50,7 @@ RUN dnf install \
     -y
 
 WORKDIR /root
-ARG php_version="8.4.8"
+ARG php_version="8.4.11"
 RUN curl https://www.php.net/distributions/php-${php_version}.tar.gz -o php-${php_version}.tar.gz \
     && tar xvfz php-${php_version}.tar.gz \
     && cd php-${php_version} \

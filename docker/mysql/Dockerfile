@@ -1,5 +1,5 @@
-# https://hub.docker.com/layers/library/mysql/9.3.0/images/sha256-167ae6517bc1c3d0d9fb447a6fe7fce1a8d783894568433fdff6937dd076a3e1
-FROM mysql:9.3.0
+# https://hub.docker.com/layers/library/mysql/9.4.0/images/sha256-aaae6655f7e4ffb05fb9820075721bfaaf737144ed95e9b9fe0e20583a7a3568
+FROM mysql:9.4.0
 
 COPY ./my.cnf /etc/mysql/conf.d/my.cnf
 COPY ./db-access.cnf /root/db-access.cnf
