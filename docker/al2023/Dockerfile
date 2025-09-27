@@ -1,4 +1,4 @@
-ARG amazonlinux_version="2023.8.20250808.1"
+ARG amazonlinux_version="2023.8.20250915.0"
 
 FROM amazonlinux:${amazonlinux_version}
 
@@ -50,7 +50,7 @@ RUN dnf install \
     -y
 
 WORKDIR /root
-ARG php_version="8.4.11"
+ARG php_version="8.4.13"
 RUN curl https://www.php.net/distributions/php-${php_version}.tar.gz -o php-${php_version}.tar.gz \
     && tar xvfz php-${php_version}.tar.gz \
     && cd php-${php_version} \
@@ -99,7 +99,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 
 # install nodejs
 WORKDIR /root
-RUN curl -fsSL https://rpm.nodesource.com/setup_22.x -o nodesource_setup.sh \
+RUN curl -fsSL https://rpm.nodesource.com/setup_24.x -o nodesource_setup.sh \
     && bash nodesource_setup.sh \
     && dnf install nodejs -y \
     && node -v

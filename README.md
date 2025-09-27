@@ -1,10 +1,15 @@
 # Docker environment with Laravel12, Amazon Linux 2023 and MinIO
 
-Skelton of docker environment with Laravel12, Amazon Linux 2023 and MinIO
+Skelton of docker environment with:
+- Laravel12
+- Amazon Linux 2023
+- Mailpit
+- MySQL
+- MinIO
 
 ## Verified platform
 
-- Ubuntu 24.04.4 LTS (WSL2 on Windows11)
+- Ubuntu 24.04.2 LTS (WSL2 on Windows11)
 
 ## Requirement
 
@@ -15,10 +20,10 @@ Skelton of docker environment with Laravel12, Amazon Linux 2023 and MinIO
 
 ## Containers to be built
 
-- al2023: [Amazon Linux 2023](https://hub.docker.com/layers/library/amazonlinux/2023.8.20250808.1/images/sha256-5a065665e78e8de28c7a334f19b7fd9fd7f1888f579462f28b731ae0d30a6f19) ([nginx](https://nginx.org/) / [PHP 8.4.11](https://www.php.net/ChangeLog-8.php#8.4.11) / [Laravel 12](https://laravel.com/docs/12.x))
+- al2023: [Amazon Linux 2023](https://hub.docker.com/layers/library/amazonlinux/2023.8.20250915.0/images/sha256-e5a3e7c0b5594ffc5dbb10e667a761c50947c7e50785d0902953e36f81f49971) ([nginx](https://nginx.org/) / [PHP 8.4.13](https://www.php.net/ChangeLog-8.php#8.4.13) / [Laravel 12](https://laravel.com/docs/12.x))
 - mysql: [MySQL Server 9.4.0](https://hub.docker.com/layers/library/mysql/9.4.0/images/sha256-aaae6655f7e4ffb05fb9820075721bfaaf737144ed95e9b9fe0e20583a7a3568)
-- mailpit: [axllent/mailpit:v1.27.4](https://hub.docker.com/layers/axllent/mailpit/v1.27.4/images/sha256-ac71e967509f83e0f473bd8e6cac02c5984d7f77ebfef851f67963e598549ddf)
-- minio: [minio/minio:RELEASE.2025-07-23T15-54-02Z](https://hub.docker.com/layers/minio/minio/RELEASE.2025-07-23T15-54-02Z/images/sha256-f6efb212cad3b62f78ca02339f16d8bc28d5bb2fbe792dfc21225c6037d2af8b)
+- mailpit: [axllent/mailpit:v1.27.8](https://hub.docker.com/layers/axllent/mailpit/v1.27.8/images/sha256-5779bdab6c6dd4a628f72dd500e74300bb18c3e14914c01a3b9e6eb8b1c92b5c)
+- minio: [minio/minio:RELEASE.2025-09-07T16-13-09Z](https://hub.docker.com/layers/minio/minio/RELEASE.2025-09-07T16-13-09Z/images/sha256-a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2)
 
 ## Project file structure
 
@@ -98,10 +103,10 @@ This command performs:
 - `bin/initial-settings`: performs initial settings on `al2023` container.
 - `bin/laravel-new`: creates Laravel 12 project in `html/` on your host.
 - `bin/mailpit-root`: connects to root shell on `mailpiit` container.
-- `bin/minio-connect`: connects to mysql database `laravel`.
 - `bin/minio-cleanup`: clears whole MinIO data.
 - `bin/minio-root`: connects to root shell on `minio` container.
 - `bin/mysql-cleanup`: clears whole MySQL data.
+- `bin/mysql-connect`: connects to mysql database `laravel`.
 - `bin/mysql-export`: exports MySQL data from `mysql` container.
 - `bin/mysql-import`: imports MySQL data into `mysql` container.
 - `bin/mysql-root`: connects to root shell on `mysql` container.
